@@ -1,0 +1,10 @@
+{
+  "changelog": true,
+  "npm": true,
+  "github": false,
+  "dryRun": true,
+  "repositoryUrl": "https://github.com/Weetbix/nx-monorepo-example",
+  "branches": [
+    "main"
+  ]
+}
