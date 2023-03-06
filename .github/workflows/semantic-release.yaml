@@ -8,6 +8,12 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        # Set working directory to /test-monorepo folder for all 'run' commands.
+        # Commands using 'uses' will need options passed in.
+        working-directory: ./test-monorepo
+
     steps:
       - uses: actions/checkout@v2
 
