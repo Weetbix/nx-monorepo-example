@@ -8,6 +8,8 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     defaults:
       run:
         # Set working directory to /test-monorepo folder for all 'run' commands.
@@ -25,7 +27,5 @@ jobs:
       - run: yarn install
 
       - run: npx nx run-many --target=semantic-release
-        permissions:
-          contents: write
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
