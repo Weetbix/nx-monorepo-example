@@ -1,3 +1,5 @@
+## [1.1.0](https://github.com/Weetbix/nx-monorepo-example/compare/is-odd-v1.0.1...is-odd-v1.1.0) (2023-03-07)
+
 ## [1.0.1](https://github.com/Weetbix/nx-monorepo-example/compare/is-odd-v1.0.0...is-odd-v1.0.1) (2023-03-07)
 
 
