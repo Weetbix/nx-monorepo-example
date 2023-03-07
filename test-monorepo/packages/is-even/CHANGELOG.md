@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/Weetbix/nx-monorepo-example/compare/is-even-v1.1.0...is-even-v1.2.0) (2023-03-07)
+
+
+### Features
+
+* is-even feature ([2dd68bc](https://github.com/Weetbix/nx-monorepo-example/commit/2dd68bc1f00f641922fa637b8b0a1ac962e02d6e))
+
 # [1.1.0](https://github.com/Weetbix/nx-monorepo-example/compare/is-even-v1.0.0...is-even-v1.1.0) (2023-03-07)
 
 
