@@ -5,4 +5,5 @@ module.exports = {
   repositoryUrl: 'https://github.com/Weetbix/nx-monorepo-example',
   branches: ['main'],
   preset: 'conventionalcommits',
+  commitMessage: 'chore(${PROJECT_NAME}): release version ${nextRelease.version} [skip ci]\\n\\n${nextRelease.notes}'
 };
