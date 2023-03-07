@@ -18,7 +18,8 @@
     "semantic-release": {
       "options": {
         "buildTarget": "{projectName}:build",
-        "outputPath": "dist"
+        "outputPath": "dist",
+        "preset": "conventionalcommits"
       }
     }
   }
