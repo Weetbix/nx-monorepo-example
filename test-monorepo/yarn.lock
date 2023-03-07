@@ -1610,10 +1610,10 @@
     lodash "^4.17.4"
     read-pkg-up "^7.0.0"
 
-"@theunderscorer/nx-semantic-release@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@theunderscorer/nx-semantic-release/-/nx-semantic-release-2.0.0.tgz#f657afbac41d81b834b770ee3bfaa4de79764ef8"
-  integrity sha512-eI6ZjovzU9i5pS+4I7l3P8O06lXXdy6bzvjbcbSX8VU/Uwp2cnldzdOtO9vt77Dv/GQyPRE9xRH4uK9a74ms/Q==
+"@theunderscorer/nx-semantic-release@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@theunderscorer/nx-semantic-release/-/nx-semantic-release-2.0.1.tgz#29ce3f301b6532bea1e0210d845de66a36c4929a"
+  integrity sha512-zvy9ISClJ02W+bwQFCh8jOykPFN325Jf4kUpPJpbbLL0m6ns1urdPmA/wsL/etlJh5JeEl0UXcJf2fTvOOsCxw==
   dependencies:
     "@nrwl/devkit" "15.7.2"
     "@semantic-release/changelog" "6.0.2"

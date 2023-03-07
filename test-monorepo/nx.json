@@ -13,5 +13,13 @@
         ]
       }
     }
+  },
+  "targetDefaults": {
+    "semantic-release": {
+      "options": {
+        "buildTarget": "{projectName}:build",
+        "outputPath": "dist"
+      }
+    }
   }
 }
