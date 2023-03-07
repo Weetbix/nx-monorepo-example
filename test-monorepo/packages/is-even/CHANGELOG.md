@@ -1,3 +1,14 @@
+## [2.0.0](https://github.com/Weetbix/nx-monorepo-example/compare/is-even-v1.2.0...is-even-v2.0.0) (2023-03-07)
+
+
+### ⚠ BREAKING CHANGES
+
+* breaking bug in is-even
+
+### Bug Fixes
+
+* breaking bug in is-even ([cd40396](https://github.com/Weetbix/nx-monorepo-example/commit/cd4039605407ddaea7e2e1f733cad5d354c8d157))
+
 # [1.2.0](https://github.com/Weetbix/nx-monorepo-example/compare/is-even-v1.1.0...is-even-v1.2.0) (2023-03-07)
 
 
