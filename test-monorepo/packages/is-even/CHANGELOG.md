@@ -1,3 +1,15 @@
+## [2.4.0](https://github.com/Weetbix/nx-monorepo-example/compare/is-even-v2.3.1...is-even-v2.4.0) (2023-03-08)
+
+
+### Features
+
+* test again ([#2](https://github.com/Weetbix/nx-monorepo-example/issues/2)) ([aa78217](https://github.com/Weetbix/nx-monorepo-example/commit/aa78217b2486eb36ee96db69a131cbc97f6fe611))
+
+
+### Bug Fixes
+
+* try pushing with branch rule (probably will break) ([#1](https://github.com/Weetbix/nx-monorepo-example/issues/1)) ([ff6e26f](https://github.com/Weetbix/nx-monorepo-example/commit/ff6e26f7e927e525920bae3169a5d438d13bc850))
+
 ## [2.3.1](https://github.com/Weetbix/nx-monorepo-example/compare/is-even-v2.3.0...is-even-v2.3.1) (2023-03-08)
 
 
