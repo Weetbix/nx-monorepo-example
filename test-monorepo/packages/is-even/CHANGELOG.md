@@ -1,3 +1,11 @@
+## [2.5.1](https://github.com/Weetbix/nx-monorepo-example/compare/is-even-v2.5.0...is-even-v2.5.1) (2023-03-08)
+
+
+### Bug Fixes
+
+* touch all packages (fix) ([#4](https://github.com/Weetbix/nx-monorepo-example/issues/4)) ([b3f8f67](https://github.com/Weetbix/nx-monorepo-example/commit/b3f8f67461b42c927f0e858e6be06e79f6b53f36))
+* touch all projects ([#5](https://github.com/Weetbix/nx-monorepo-example/issues/5)) ([1a6a240](https://github.com/Weetbix/nx-monorepo-example/commit/1a6a24085760c58b9ba019705fd35b04de01f3be))
+
 ## [2.5.0](https://github.com/Weetbix/nx-monorepo-example/compare/is-even-v2.4.0...is-even-v2.5.0) (2023-03-08)
 
 
