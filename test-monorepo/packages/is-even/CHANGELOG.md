@@ -1,3 +1,10 @@
+## [2.3.1](https://github.com/Weetbix/nx-monorepo-example/compare/is-even-v2.3.0...is-even-v2.3.1) (2023-03-08)
+
+
+### Bug Fixes
+
+* dont include project file in npm dist ([aabe8a3](https://github.com/Weetbix/nx-monorepo-example/commit/aabe8a3944cbf3840bb1377aaef602d792b40e05))
+
 ## [2.3.0](https://github.com/Weetbix/nx-monorepo-example/compare/is-even-v2.2.0...is-even-v2.3.0) (2023-03-08)
 
 
