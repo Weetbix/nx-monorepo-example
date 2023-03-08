@@ -18,6 +18,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GIT_USER_PAT }}
 
       - name: configure git
         run: |
