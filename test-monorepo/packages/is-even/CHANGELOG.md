@@ -1,3 +1,10 @@
+## [2.6.0](https://github.com/Weetbix/nx-monorepo-example/compare/is-even-v2.5.1...is-even-v2.6.0) (2023-03-08)
+
+
+### Features
+
+* touch both projects (feat) ([97594c8](https://github.com/Weetbix/nx-monorepo-example/commit/97594c8c1a90fad6b90b2e86bbfd7344a3e49f69))
+
 ## [2.5.1](https://github.com/Weetbix/nx-monorepo-example/compare/is-even-v2.5.0...is-even-v2.5.1) (2023-03-08)
 
 
