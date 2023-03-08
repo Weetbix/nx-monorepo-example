@@ -1,3 +1,10 @@
+## [2.3.0](https://github.com/Weetbix/nx-monorepo-example/compare/is-even-v2.2.0...is-even-v2.3.0) (2023-03-08)
+
+
+### Features
+
+* remove function ([f9117c2](https://github.com/Weetbix/nx-monorepo-example/commit/f9117c25599b256d861fb0cd5b6442b7c8016331))
+
 ## [2.2.0](https://github.com/Weetbix/nx-monorepo-example/compare/is-even-v2.1.0...is-even-v2.2.0) (2023-03-08)
 
 
