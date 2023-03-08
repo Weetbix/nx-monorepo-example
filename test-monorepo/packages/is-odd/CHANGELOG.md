@@ -1,3 +1,10 @@
+## [1.1.2](https://github.com/Weetbix/nx-monorepo-example/compare/is-odd-v1.1.1...is-odd-v1.1.2) (2023-03-08)
+
+
+### Bug Fixes
+
+* touch all projects ([#5](https://github.com/Weetbix/nx-monorepo-example/issues/5)) ([1a6a240](https://github.com/Weetbix/nx-monorepo-example/commit/1a6a24085760c58b9ba019705fd35b04de01f3be))
+
 ## [1.1.1](https://github.com/Weetbix/nx-monorepo-example/compare/is-odd-v1.1.0...is-odd-v1.1.1) (2023-03-08)
 
 
