@@ -1,3 +1,10 @@
+## [1.3.0](https://github.com/Weetbix/nx-monorepo-example/compare/is-odd-v1.2.0...is-odd-v1.3.0) (2024-05-03)
+
+
+### Features
+
+* add isOdd3 ([c532f6b](https://github.com/Weetbix/nx-monorepo-example/commit/c532f6be870a6d13c159f7c65bded5891d362dd3))
+
 ## [1.2.0](https://github.com/Weetbix/nx-monorepo-example/compare/is-odd-v1.1.2...is-odd-v1.2.0) (2023-03-08)
 
 
