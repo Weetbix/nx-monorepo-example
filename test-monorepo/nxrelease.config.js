@@ -2,10 +2,9 @@ module.exports = {
   changelog: true,
   npm: true,
   github: false,
+  git: false,
   repositoryUrl: 'https://github.com/Weetbix/nx-monorepo-example',
   branches: ['main'],
-  commitMessage:
-    'chore(${PROJECT_NAME}): release version ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}',
   presetConfig: {
     types: [
       { type: 'custom', section: 'Features' },
