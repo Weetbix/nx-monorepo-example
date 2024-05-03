@@ -1,6 +1,6 @@
 {
   "name": "@weetbix/is-even",
-  "version": "2.6.0",
+  "version": "0.0.0",
   "main": "dist/index.js",
   "private": false,
   "publishConfig": {
