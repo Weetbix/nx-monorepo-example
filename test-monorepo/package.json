@@ -6,10 +6,10 @@
   "private": true,
   "dependencies": {},
   "devDependencies": {
-    "@nrwl/workspace": "^15.8.5",
+    "@nrwl/workspace": "^17.0.0",
     "@theunderscorer/nx-semantic-release": "^2.11.0",
     "conventional-changelog-conventionalcommits": "^5.0.0",
-    "nx": "15.8.5",
+    "nx": "^17.0.0",
     "prettier": "^2.6.2",
     "typescript": "^4.9.5"
   },
