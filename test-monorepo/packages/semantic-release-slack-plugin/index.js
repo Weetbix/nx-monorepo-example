@@ -5,74 +5,112 @@ let messageTs;
 let channelId;
 
 /**
- * Creates message blocks for the release start notification
+ * Creates a consistent message block format for all states
+ * @param {Object} context - The semantic-release context
+ * @param {String} status - Current status: 'pending', 'success', or 'failure'
+ * @param {String} version - The version being released
  */
-function createStartMessageBlocks(context) {
+function createMessageBlocks(context, status, version) {
   const {
-    nextRelease,
     branch,
     options,
   } = context;
 
   const packageName = options.executorContext?.projectName;
   const repoUrl = options.repositoryUrl || '';
-
-  // Determine release types
-  let releaseTypes = context.releaseTypes || ['npm']; // Default to npm if not specified
-
-  // Auto-detect S3 publishing if not explicitly configured
-  if (!context.releaseTypesExplicit && detectS3Publishing(context)) {
-    if (!releaseTypes.includes('s3')) {
-      releaseTypes = [...releaseTypes, 's3'];
-    }
-  }
-
+  const releaseTypes = context.releaseTypes || ['npm'];
+  
   // Format release types for display
   const releaseTypesText = releaseTypes
     .map((type) => type.toUpperCase())
     .join(' & ');
 
+  // Status-specific values
+  let statusEmoji, statusText;
+  switch (status) {
+    case 'pending':
+      statusEmoji = ':hourglass:';
+      statusText = 'In Progress';
+      break;
+    case 'success':
+      statusEmoji = ':white_check_mark:';
+      statusText = 'Success';
+      break;
+    case 'failure':
+      statusEmoji = ':x:';
+      statusText = 'Failed';
+      break;
+    default:
+      statusEmoji = ':grey_question:';
+      statusText = 'Unknown';
+  }
+
+  // Generate release links (only for success)
+  const releaseLinks = [];
+  if (status === 'success' && version) {
+    if (releaseTypes.includes('npm')) {
+      const npmUrl = `https://www.npmjs.com/package/${packageName}/v/${version}`;
+      releaseLinks.push(`<${npmUrl}|NPM>`);
+    }
+
+    if (releaseTypes.includes('s3')) {
+      const cdnUrl = context.cdnUrl || 
+                    process.env.CDN_URL || 
+                    `https://cdn.example.com/${packageName}/${version}/`;
+      releaseLinks.push(`<${cdnUrl}|CDN>`);
+    }
+
+    if (repoUrl) {
+      releaseLinks.push(`<${repoUrl}|Repo>`);
+    }
+  }
+
   return [
-    {
-      type: 'header',
-      text: {
-        type: 'plain_text',
-        text: `Release process started for ${packageName}`,
-        emoji: true,
-      },
-    },
     {
       type: 'section',
       fields: [
         {
           type: 'mrkdwn',
-          text: `*Branch:*\n${branch.name}`,
+          text: `*${packageName}* ${version ? `v${version}` : ''}\n${statusEmoji} ${statusText}`,
         },
         {
           type: 'mrkdwn',
-          text: `*Status:*\n:hourglass: In Progress`,
+          text: `*Type:*\n${releaseTypesText}\n*Branch:*\n${branch.name}`,
         },
       ],
     },
-    {
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: `Starting ${releaseTypesText} release process for version ${
-          nextRelease?.version || 'unknown'
-        }`,
-      },
-    },
-    {
+    releaseLinks.length > 0 ? {
       type: 'context',
       elements: [
         {
           type: 'mrkdwn',
-          text: `${repoUrl ? `<${repoUrl}|Repository>` : 'Repository'}`,
+          text: releaseLinks.join(' | '),
         },
       ],
-    },
-  ];
+    } : null,
+  ].filter(Boolean);
+}
+
+/**
+ * Creates message blocks for the release start notification
+ */
+function createStartMessageBlocks(context) {
+  return createMessageBlocks(context, 'pending');
+}
+
+/**
+ * Creates message blocks for the release success notification
+ */
+function createSuccessMessageBlocks(context) {
+  const { nextRelease } = context;
+  return createMessageBlocks(context, 'success', nextRelease?.version);
+}
+
+/**
+ * Creates message blocks for the release failure notification
+ */
+function createFailureMessageBlocks(context) {
+  return createMessageBlocks(context, 'failure');
 }
 
 /**
@@ -105,132 +143,6 @@ function detectS3Publishing(context) {
       pluginConfig.publishCmd.includes('publish-to-s3.js')
     );
   });
-}
-
-/**
- * Creates message blocks for the release success notification
- */
-function createSuccessMessageBlocks(context) {
-  const {
-    nextRelease,
-    options,
-  } = context;
-
-  const packageName = options.executorContext?.projectName;
-  const repoUrl = options.repositoryUrl || '';
-
-  // Get release types from context
-  const releaseTypes = context.releaseTypes || ['npm'];
-
-  // Generate release links
-  const releaseLinks = [];
-
-  if (releaseTypes.includes('npm')) {
-    const npmUrl = `https://www.npmjs.com/package/${packageName}/v/${nextRelease.version}`;
-    releaseLinks.push(`<${npmUrl}|NPM Release>`);
-  }
-
-  if (releaseTypes.includes('s3')) {
-    // Try to extract CDN URL from context, or use default format
-    const cdnUrl =
-      context.cdnUrl ||
-      process.env.CDN_URL ||
-      `https://cdn.example.com/${packageName}/${nextRelease.version}/`;
-
-    releaseLinks.push(`<${cdnUrl}|S3 Release>`);
-  }
-
-  // Default git release link
-  const gitReleaseUrl = nextRelease.gitHead
-    ? `${repoUrl}/releases/tag/${nextRelease.gitHead}`
-    : '';
-
-  if (gitReleaseUrl) {
-    releaseLinks.push(`<${gitReleaseUrl}|Git Release>`);
-  }
-
-  // Create a compact message for multi-package releases
-  return [
-    {
-      type: 'section',
-      fields: [
-        {
-          type: 'mrkdwn',
-          text: `*${packageName} v${nextRelease.version}*\n:white_check_mark: Success`,
-        },
-      ],
-    },
-    {
-      type: 'context',
-      elements: [
-        {
-          type: 'mrkdwn',
-          text: releaseLinks.join(' | '),
-        },
-      ],
-    },
-    nextRelease.notes
-      ? {
-          type: 'section',
-          text: {
-            type: 'mrkdwn',
-            text: `:arrow_down: *<#|Release notes>*`,
-          },
-          accessory: {
-            type: 'button',
-            text: {
-              type: 'plain_text',
-              text: 'View',
-              emoji: true,
-            },
-            action_id: `view_notes_${packageName}_${nextRelease.version}`,
-          },
-        }
-      : null,
-  ].filter(Boolean);
-}
-
-/**
- * Creates message blocks for the release failure notification
- */
-function createFailureMessageBlocks(context) {
-  const {
-    branch,
-    options,
-  } = context;
-
-  const packageName = options.executorContext?.projectName || 'package';
-
-  return [
-    {
-      type: 'header',
-      text: {
-        type: 'plain_text',
-        text: `Release failed for ${packageName}`,
-        emoji: true,
-      },
-    },
-    {
-      type: 'section',
-      fields: [
-        {
-          type: 'mrkdwn',
-          text: `*Branch:*\n${branch.name}`,
-        },
-        {
-          type: 'mrkdwn',
-          text: `*Status:*\n:x: Failed`,
-        },
-      ],
-    },
-    {
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: `The release process has failed. Please check the logs for more information.`,
-      },
-    },
-  ];
 }
 
 /**
