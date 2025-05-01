@@ -231,6 +231,10 @@ async function success(pluginConfig, context) {
     options,
   } = context;
 
+  console.log('success', context);
+  console.log('nextRelease', nextRelease);
+
+
   // Pass release types from pluginConfig to context if not already set
   if (!context.releaseTypes) {
     if (pluginConfig.releaseTypes) {
