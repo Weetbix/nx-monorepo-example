@@ -48,6 +48,7 @@ function createMessageBlocks(context, status, version) {
       statusText = 'Unknown';
   }
 
+  console.log({context})
   const workflowUrl = `${env.GITHUB_SERVER_URL}/${env.GITHUB_REPOSITORY}/actions/runs/${env.GITHUB_RUN_ID}`;
   const statusDisplay = `<${workflowUrl}|${statusEmoji} ${statusText}>`;
   const commitTitle = options.commits[0].message;
