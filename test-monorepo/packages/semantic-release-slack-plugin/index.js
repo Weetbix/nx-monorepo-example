@@ -12,19 +12,10 @@ function createStartMessageBlocks(context) {
     nextRelease,
     branch,
     options,
-    pkg,
-    env: { SEMANTIC_RELEASE_PACKAGE, npm_package_name },
   } = context;
 
+  const packageName = options.executorContext?.projectName;
   const repoUrl = options.repositoryUrl || '';
-  const packageName = pkg.name || SEMANTIC_RELEASE_PACKAGE || npm_package_name || 'package';
-
-  console.log({
-    pkg,
-    SEMANTIC_RELEASE_PACKAGE,
-    npm_package_name,
-    packageName,
-  });
 
   // Determine release types
   let releaseTypes = context.releaseTypes || ['npm']; // Default to npm if not specified
@@ -123,11 +114,10 @@ function createSuccessMessageBlocks(context) {
   const {
     nextRelease,
     options,
-    env: { SEMANTIC_RELEASE_PACKAGE, npm_package_name },
   } = context;
 
+  const packageName = options.executorContext?.projectName;
   const repoUrl = options.repositoryUrl || '';
-  const packageName = SEMANTIC_RELEASE_PACKAGE || npm_package_name || 'package';
 
   // Get release types from context
   const releaseTypes = context.releaseTypes || ['npm'];
@@ -206,10 +196,10 @@ function createSuccessMessageBlocks(context) {
 function createFailureMessageBlocks(context) {
   const {
     branch,
-    env: { SEMANTIC_RELEASE_PACKAGE, npm_package_name },
+    options,
   } = context;
 
-  const packageName = SEMANTIC_RELEASE_PACKAGE || npm_package_name || 'package';
+  const packageName = options.executorContext?.projectName || 'package';
 
   return [
     {
@@ -256,17 +246,10 @@ async function prepare(pluginConfig, context) {
   const {
     logger,
     env,
+    options,
   } = context;
 
-  // Log the entire context and env object for debugging
-  // console.log('ENTIRE CONTEXT:', JSON.stringify(context, null, 2));
-  console.log('ENTIRE ENV OBJECT:', JSON.stringify(env, null, 2));
-  console.log({ name: context.options.executorContext.projectName });
-
-
   const {
-    SEMANTIC_RELEASE_PACKAGE,
-    npm_package_name,
     SLACK_BOT_TOKEN,
     SLACK_RELEASE_CHANNEL_ID,
   } = env;
@@ -292,7 +275,7 @@ async function prepare(pluginConfig, context) {
 
   const slackToken = SLACK_BOT_TOKEN;
   channelId = SLACK_RELEASE_CHANNEL_ID;
-  const packageName = SEMANTIC_RELEASE_PACKAGE || npm_package_name || 'package';
+  const packageName = options.executorContext?.projectName || 'package';
 
   if (!slackToken) {
     logger.log(
@@ -333,7 +316,7 @@ async function success(pluginConfig, context) {
   const {
     logger,
     nextRelease,
-    env: { SEMANTIC_RELEASE_PACKAGE, npm_package_name },
+    options,
   } = context;
 
   // Pass release types from pluginConfig to context if not already set
@@ -355,7 +338,7 @@ async function success(pluginConfig, context) {
 
   // Create message blocks
   const messageBlocks = createSuccessMessageBlocks(context);
-  const packageName = SEMANTIC_RELEASE_PACKAGE || npm_package_name || 'package';
+  const packageName = options.executorContext?.projectName || 'package';
 
   if (!slackClient || !messageTs) {
     logger.log(
@@ -386,12 +369,12 @@ async function success(pluginConfig, context) {
 async function fail(pluginConfig, context) {
   const {
     logger,
-    env: { SEMANTIC_RELEASE_PACKAGE, npm_package_name },
+    options,
   } = context;
 
   // Create message blocks
   const messageBlocks = createFailureMessageBlocks(context);
-  const packageName = SEMANTIC_RELEASE_PACKAGE || npm_package_name || 'package';
+  const packageName = options.executorContext?.projectName || 'package';
 
   if (!slackClient || !messageTs) {
     logger.log(
