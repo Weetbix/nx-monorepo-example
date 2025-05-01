@@ -194,7 +194,8 @@ async function prepare(pluginConfig, context) {
   try {
     const response = await slackClient.chat.postMessage({
       channel: channelId,
-      blocks: messageBlocks
+      blocks: messageBlocks,
+      text: `Release process started for ${context.env.npm_package_name || 'package'}`
     });
     
     messageTs = response.ts;
@@ -224,7 +225,8 @@ async function success(pluginConfig, context) {
     await slackClient.chat.update({
       channel: channelId,
       ts: messageTs,
-      blocks: messageBlocks
+      blocks: messageBlocks,
+      text: `Release successful for ${context.env.npm_package_name || 'package'} v${context.nextRelease.version}`
     });
     
     logger.log('Successfully updated Slack message with release information');
@@ -253,7 +255,8 @@ async function fail(pluginConfig, context) {
     await slackClient.chat.update({
       channel: channelId,
       ts: messageTs,
-      blocks: messageBlocks
+      blocks: messageBlocks,
+      text: `Release failed for ${context.env.npm_package_name || 'package'}`
     });
     
     logger.log('Successfully updated Slack message with failure information');
