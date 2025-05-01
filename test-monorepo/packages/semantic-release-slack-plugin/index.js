@@ -12,11 +12,19 @@ function createStartMessageBlocks(context) {
     nextRelease,
     branch,
     options,
+    pkg,
     env: { SEMANTIC_RELEASE_PACKAGE, npm_package_name },
   } = context;
 
   const repoUrl = options.repositoryUrl || '';
-  const packageName = SEMANTIC_RELEASE_PACKAGE || npm_package_name || 'package';
+  const packageName = pkg.name || SEMANTIC_RELEASE_PACKAGE || npm_package_name || 'package';
+
+  console.log({
+    pkg,
+    SEMANTIC_RELEASE_PACKAGE,
+    npm_package_name,
+    packageName,
+  });
 
   // Determine release types
   let releaseTypes = context.releaseTypes || ['npm']; // Default to npm if not specified
