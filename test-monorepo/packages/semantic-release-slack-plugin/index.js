@@ -1,4 +1,5 @@
 const { WebClient } = require('@slack/web-api');
+const { execSync } = require('child_process');
 
 let slackClient;
 let messageTs;
@@ -12,6 +13,14 @@ let channelId;
 function extractPrNumber(message) {
   const match = message.match(/\(#(\d+)\)$/);
   return match[1];
+}
+
+/**
+ * Get current commit message using git log
+ * @returns {String} - Current commit message
+ */
+function getCurrentCommitMessage() {
+  return execSync('git log -1 --pretty=%B').toString().trim();
 }
 
 /**
@@ -48,10 +57,9 @@ function createMessageBlocks(context, status, version) {
       statusText = 'Unknown';
   }
 
-  console.log({context})
   const workflowUrl = `${env.GITHUB_SERVER_URL}/${env.GITHUB_REPOSITORY}/actions/runs/${env.GITHUB_RUN_ID}`;
   const statusDisplay = `<${workflowUrl}|${statusEmoji} ${statusText}>`;
-  const commitTitle = options.commits[0].message;
+  const commitTitle = getCurrentCommitMessage();
   const prNumber = extractPrNumber(commitTitle);
   const prLink = `https://github.com/${env.GITHUB_REPOSITORY}/pull/${prNumber}`;
 
