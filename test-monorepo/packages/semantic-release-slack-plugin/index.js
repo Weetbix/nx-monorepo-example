@@ -56,10 +56,10 @@ function createMessageBlocks(context, status, version) {
     });
   }
 
-  // Add workflow link if available
-  if (workflowUrl) {
-    releaseLinks.push(`<${workflowUrl}|Workflow Run>`);
-  }
+  // Create status text with workflow link if available
+  const statusDisplay = workflowUrl 
+    ? `<${workflowUrl}|${statusEmoji} ${statusText}>`
+    : `${statusEmoji} ${statusText}`;
 
   return [
     {
@@ -71,7 +71,7 @@ function createMessageBlocks(context, status, version) {
         },
         {
           type: 'mrkdwn',
-          text: `${statusEmoji} ${statusText}`,
+          text: statusDisplay,
         },
       ],
     },
