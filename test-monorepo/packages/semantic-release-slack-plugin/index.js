@@ -12,7 +12,7 @@ let channelId;
  */
 function extractPrNumber(message) {
   const match = message.match(/\(#(\d+)\)$/);
-  return match[1];
+  return match?.[1] || null;
 }
 
 /**
