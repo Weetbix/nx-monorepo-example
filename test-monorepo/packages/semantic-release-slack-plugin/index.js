@@ -255,13 +255,19 @@ function createFailureMessageBlocks(context) {
 async function prepare(pluginConfig, context) {
   const {
     logger,
-    env: {
-      SEMANTIC_RELEASE_PACKAGE,
-      npm_package_name,
-      SLACK_BOT_TOKEN,
-      SLACK_RELEASE_CHANNEL_ID,
-    },
+    env,
   } = context;
+
+  // Log the entire context and env object for debugging
+  console.log('ENTIRE CONTEXT:', JSON.stringify(context, null, 2));
+  console.log('ENTIRE ENV OBJECT:', JSON.stringify(env, null, 2));
+
+  const {
+    SEMANTIC_RELEASE_PACKAGE,
+    npm_package_name,
+    SLACK_BOT_TOKEN,
+    SLACK_RELEASE_CHANNEL_ID,
+  } = env;
 
   // Pass release types from pluginConfig to context
   if (pluginConfig.releaseTypes) {
