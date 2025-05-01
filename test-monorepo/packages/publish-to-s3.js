@@ -12,9 +12,19 @@ const targetFolderName = process.argv[5];
 // For example:
 // execSync(`aws s3 cp --acl public-read ${sourceFilePath} s3://${process.env.CDN_S3_BUCKET}/${targetFolderName}/@${version}/${targetFileName}`, {stdio: 'inherit'})
 
-console.log('Dummy publish to S3 with these inputs:', {
-  version,
-  sourceFilePath,
-  targetFileName,
-  targetFolderName,
-});
+// Log internal information for debugging
+// console.log('Dummy publish to S3 with these inputs:', {
+//   version,
+//   sourceFilePath,
+//   targetFileName,
+//   targetFolderName,
+// });
+
+// Output release data in JSON format for semantic-release
+const releaseData = {
+  name: `S3 CDN`,
+  url: `https://example-cdn.com/${targetFolderName}/@${version}/${targetFileName}`
+};
+
+// This will be captured by semantic-release and added to the releases object
+console.log(JSON.stringify(releaseData));
