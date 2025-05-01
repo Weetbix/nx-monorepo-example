@@ -67,7 +67,11 @@ function createMessageBlocks(context, status, version) {
       fields: [
         {
           type: 'mrkdwn',
-          text: `*${packageName}* ${version ? `v${version}` : ''}\n${statusEmoji} ${statusText}`,
+          text: `*${packageName}* ${version ? `v${version}` : ''}`,
+        },
+        {
+          type: 'mrkdwn',
+          text: `${statusEmoji} ${statusText}`,
         },
       ],
     },
@@ -166,6 +170,8 @@ async function prepare(pluginConfig, context) {
       channel: channelId,
       blocks: messageBlocks,
       text: `Release process started for ${packageName}`,
+      unfurl_links: false,
+      unfurl_media: false
     });
 
     messageTs = response.ts;
@@ -207,6 +213,8 @@ async function success(pluginConfig, context) {
       ts: messageTs,
       blocks: messageBlocks,
       text: `Release successful for ${packageName} v${nextRelease.version}`,
+      unfurl_links: false,
+      unfurl_media: false
     });
 
     logger.log('Successfully updated Slack message with release information');
@@ -243,6 +251,8 @@ async function fail(pluginConfig, context) {
       ts: messageTs,
       blocks: messageBlocks,
       text: `Release failed for ${packageName}`,
+      unfurl_links: false,
+      unfurl_media: false
     });
 
     logger.log('Successfully updated Slack message with failure information');
