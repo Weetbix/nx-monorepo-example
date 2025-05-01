@@ -60,13 +60,14 @@ function createSuccessMessageBlocks(context) {
   const repoUrl = context.options.repositoryUrl || '';
   const releaseUrl = nextRelease.gitHead ? 
     `${repoUrl}/releases/tag/${nextRelease.gitHead}` : '';
+  const packageName = context.env.npm_package_name || 'package';
   
   return [
     {
       type: 'header',
       text: {
         type: 'plain_text',
-        text: `Release successful for ${context.env.npm_package_name || 'package'} ${nextRelease.version}`,
+        text: `Release successful for ${packageName} v${nextRelease.version}`,
         emoji: true
       }
     },
@@ -75,7 +76,7 @@ function createSuccessMessageBlocks(context) {
       fields: [
         {
           type: 'mrkdwn',
-          text: `*Version:*\n${nextRelease.version}`
+          text: `*Version:*\nv${nextRelease.version}`
         },
         {
           type: 'mrkdwn',
@@ -87,9 +88,34 @@ function createSuccessMessageBlocks(context) {
       type: 'section',
       text: {
         type: 'mrkdwn',
-        text: `Release notes:\n${nextRelease.notes || 'No release notes available'}`
+        text: 'Release notes:'
       }
     },
+    {
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: nextRelease.notes ? `:arrow_down: *<#|Click to expand>*` : 'No release notes available'
+      },
+      accessory: nextRelease.notes ? {
+        type: 'button',
+        text: {
+          type: 'plain_text',
+          text: 'View Release Notes',
+          emoji: true
+        },
+        action_id: 'view_release_notes'
+      } : null
+    },
+    nextRelease.notes ? {
+      type: 'context',
+      elements: [
+        {
+          type: 'mrkdwn',
+          text: `${nextRelease.notes}`
+        }
+      ]
+    } : null,
     {
       type: 'context',
       elements: [
@@ -99,7 +125,7 @@ function createSuccessMessageBlocks(context) {
         }
       ]
     }
-  ];
+  ].filter(Boolean);
 }
 
 /**
