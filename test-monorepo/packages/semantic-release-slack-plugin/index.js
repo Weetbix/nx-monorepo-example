@@ -30,13 +30,10 @@ function getCurrentCommitMessage() {
  * @param {String} version - The version being released
  */
 function createMessageBlocks(context, status, version) {
-  const {
-    options,
-    env,
-  } = context;
+  const { options, env } = context;
 
   const packageName = options.executorContext.projectName;
-  
+
   // Status-specific values
   let statusEmoji, statusText;
   switch (status) {
@@ -76,7 +73,7 @@ function createMessageBlocks(context, status, version) {
           text: statusDisplay,
         },
       ],
-    }
+    },
   ];
 
   // Add commit info
@@ -85,19 +82,20 @@ function createMessageBlocks(context, status, version) {
     text: {
       type: 'mrkdwn',
       text: `<${prLink}|${commitTitle}>`,
-    }
+    },
   });
 
   // Generate release links (only for success)
   if (status === 'success') {
     const releaseLinks = [];
-    
+
     // Add links from context.releases
-    context.releases.forEach(release => {
-      releaseLinks.push(`<${release.url}|${release.name}>`);
-    });
-    
-    // Add release links
+    context.releases
+      .filter((release) => release.url && release.name)
+      .forEach((release) => {
+        releaseLinks.push(`<${release.url}|${release.name}>`);
+      });
+
     blocks.push({
       type: 'context',
       elements: [
@@ -144,11 +142,7 @@ function createFailureMessageBlocks(context) {
  * @returns {Object} The plugin object with lifecycle methods
  */
 async function prepare(pluginConfig, context) {
-  const {
-    logger,
-    env,
-    options,
-  } = context;
+  const { logger, env, options } = context;
 
   // Add GitHub environment variables to context.env for use in message blocks
   context.env = env;
@@ -166,7 +160,7 @@ async function prepare(pluginConfig, context) {
     blocks: messageBlocks,
     text: `Release process started for ${packageName}`,
     unfurl_links: false,
-    unfurl_media: false
+    unfurl_media: false,
   });
   messageTs = response.ts;
   logger.log(`Posted to Slack, message timestamp: ${messageTs}`);
@@ -176,11 +170,7 @@ async function prepare(pluginConfig, context) {
  * Update the Slack message with success information
  */
 async function success(pluginConfig, context) {
-  const {
-    logger,
-    nextRelease,
-    options,
-  } = context;
+  const { logger, nextRelease, options } = context;
 
   // Create message blocks
   const messageBlocks = createSuccessMessageBlocks(context);
@@ -193,7 +183,7 @@ async function success(pluginConfig, context) {
     blocks: messageBlocks,
     text: `Release successful for ${packageName} v${nextRelease.version}`,
     unfurl_links: false,
-    unfurl_media: false
+    unfurl_media: false,
   });
   logger.log('Successfully updated Slack message with release information');
 }
@@ -202,10 +192,7 @@ async function success(pluginConfig, context) {
  * Update the Slack message with failure information
  */
 async function fail(pluginConfig, context) {
-  const {
-    logger,
-    options,
-  } = context;
+  const { logger, options } = context;
 
   // Create message blocks
   const messageBlocks = createFailureMessageBlocks(context);
@@ -218,7 +205,7 @@ async function fail(pluginConfig, context) {
     blocks: messageBlocks,
     text: `Release failed for ${packageName}`,
     unfurl_links: false,
-    unfurl_media: false
+    unfurl_media: false,
   });
   logger.log('Successfully updated Slack message with failure information');
 }
