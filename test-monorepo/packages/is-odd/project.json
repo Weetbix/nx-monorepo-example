@@ -14,6 +14,13 @@
               "publishCmd": "node ../publish-to-s3.js ${nextRelease.version} ./dist/index.min.js main.js is-odd",
               "execCwd": "${PROJECT_DIR}"
             }
+          ],
+          [
+            "../semantic-release-slack-plugin",
+            {
+              "slackToken": "${process.env.SLACK_BOT_TOKEN}",
+              "channelId": "${process.env.SLACK_RELEASE_CHANNEL_ID}"
+            }
           ]
         ]
       }
