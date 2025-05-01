@@ -5,7 +5,17 @@
   "projectType": "library",
   "targets": {
     "semantic-release": {
-      "executor": "@theunderscorer/nx-semantic-release:semantic-release"
-    }
+      "executor": "@theunderscorer/nx-semantic-release:semantic-release",
+      "options": {
+        "plugins": [
+          [
+            "@semantic-release/exec",
+            {
+              "publishCmd": "node ../publish-to-s3.js ${nextRelease.version} ./dist/index.min.js main.js is-odd",
+              "execCwd": "${PROJECT_DIR}"
+            }
+          ]
+        ]
+      }
   }
 }
