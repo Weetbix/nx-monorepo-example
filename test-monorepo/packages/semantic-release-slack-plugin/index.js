@@ -12,19 +12,12 @@ let channelId;
  */
 function createMessageBlocks(context, status, version) {
   const {
-    branch,
     options,
+    env,
   } = context;
 
   const packageName = options.executorContext?.projectName;
-  const repoUrl = options.repositoryUrl || '';
-  const releaseTypes = context.releaseTypes || ['npm'];
   
-  // Format release types for display
-  const releaseTypesText = releaseTypes
-    .map((type) => type.toUpperCase())
-    .join(' & ');
-
   // Status-specific values
   let statusEmoji, statusText;
   switch (status) {
@@ -45,24 +38,27 @@ function createMessageBlocks(context, status, version) {
       statusText = 'Unknown';
   }
 
+  // Generate GitHub Actions workflow URL if available
+  let workflowUrl = '';
+  if (env && env.GITHUB_SERVER_URL && env.GITHUB_REPOSITORY && env.GITHUB_RUN_ID) {
+    workflowUrl = `${env.GITHUB_SERVER_URL}/${env.GITHUB_REPOSITORY}/actions/runs/${env.GITHUB_RUN_ID}`;
+  }
+
   // Generate release links (only for success)
   const releaseLinks = [];
-  if (status === 'success' && version) {
-    if (releaseTypes.includes('npm')) {
-      const npmUrl = `https://www.npmjs.com/package/${packageName}/v/${version}`;
-      releaseLinks.push(`<${npmUrl}|NPM>`);
-    }
+  
+  // Add links from context.releases if available
+  if (status === 'success' && version && context.releases && Array.isArray(context.releases)) {
+    context.releases.forEach(release => {
+      if (release.url && release.name) {
+        releaseLinks.push(`<${release.url}|${release.name}>`);
+      }
+    });
+  }
 
-    if (releaseTypes.includes('s3')) {
-      const cdnUrl = context.cdnUrl || 
-                    process.env.CDN_URL || 
-                    `https://cdn.example.com/${packageName}/${version}/`;
-      releaseLinks.push(`<${cdnUrl}|CDN>`);
-    }
-
-    if (repoUrl) {
-      releaseLinks.push(`<${repoUrl}|Repo>`);
-    }
+  // Add workflow link if available
+  if (workflowUrl) {
+    releaseLinks.push(`<${workflowUrl}|Workflow Run>`);
   }
 
   return [
@@ -72,10 +68,6 @@ function createMessageBlocks(context, status, version) {
         {
           type: 'mrkdwn',
           text: `*${packageName}* ${version ? `v${version}` : ''}\n${statusEmoji} ${statusText}`,
-        },
-        {
-          type: 'mrkdwn',
-          text: `*Type:*\n${releaseTypesText}\n*Branch:*\n${branch.name}`,
         },
       ],
     },
@@ -114,42 +106,9 @@ function createFailureMessageBlocks(context) {
 }
 
 /**
- * Detect if S3 publishing is being used
- */
-function detectS3Publishing(context) {
-  if (!context || !context.options || !context.options.plugins) {
-    return false;
-  }
-
-  const plugins = context.options.plugins;
-
-  // Check for @semantic-release/exec with publish-to-s3.js script
-  return plugins.some((plugin) => {
-    if (!Array.isArray(plugin) || plugin.length < 2) {
-      return false;
-    }
-
-    const [pluginName, pluginConfig] = plugin;
-
-    if (pluginName !== '@semantic-release/exec') {
-      return false;
-    }
-
-    // Check if publishCmd contains publish-to-s3.js
-    return (
-      pluginConfig &&
-      pluginConfig.publishCmd &&
-      typeof pluginConfig.publishCmd === 'string' &&
-      pluginConfig.publishCmd.includes('publish-to-s3.js')
-    );
-  });
-}
-
-/**
  * A semantic-release plugin that posts release updates to Slack
  * @param {Object} pluginConfig - The plugin configuration
  * @param {string} pluginConfig.channelId - The Slack channel ID to post to
- * @param {Array} pluginConfig.releaseTypes - The types of releases being performed ['npm', 's3']
  * @param {string} pluginConfig.cdnUrl - Custom URL for S3/CDN releases
  * @param {Object} context - The semantic-release context
  * @returns {Object} The plugin object with lifecycle methods
@@ -164,23 +123,18 @@ async function prepare(pluginConfig, context) {
   const {
     SLACK_BOT_TOKEN,
     SLACK_RELEASE_CHANNEL_ID,
+    GITHUB_SERVER_URL,
+    GITHUB_REPOSITORY,
+    GITHUB_RUN_ID,
   } = env;
 
-  // Pass release types from pluginConfig to context
-  if (pluginConfig.releaseTypes) {
-    context.releaseTypes = pluginConfig.releaseTypes;
-    context.releaseTypesExplicit = true;
-  } else {
-    context.releaseTypes = ['npm'];
-    context.releaseTypesExplicit = false;
-
-    // Auto-detect S3 publishing if not explicitly configured
-    if (detectS3Publishing(context)) {
-      context.releaseTypes.push('s3');
-    }
-  }
-
-  context.cdnUrl = pluginConfig.cdnUrl;
+  // Add GitHub environment variables to context.env for use in message blocks
+  context.env = {
+    ...env,
+    GITHUB_SERVER_URL,
+    GITHUB_REPOSITORY,
+    GITHUB_RUN_ID,
+  };
 
   // Create message blocks
   const messageBlocks = createStartMessageBlocks(context);
@@ -233,24 +187,6 @@ async function success(pluginConfig, context) {
 
   console.log('success', context);
   console.log('nextRelease', nextRelease);
-
-
-  // Pass release types from pluginConfig to context if not already set
-  if (!context.releaseTypes) {
-    if (pluginConfig.releaseTypes) {
-      context.releaseTypes = pluginConfig.releaseTypes;
-      context.releaseTypesExplicit = true;
-    } else {
-      context.releaseTypes = ['npm'];
-      context.releaseTypesExplicit = false;
-
-      // Auto-detect S3 publishing if not explicitly configured
-      if (detectS3Publishing(context)) {
-        context.releaseTypes.push('s3');
-      }
-    }
-    context.cdnUrl = pluginConfig.cdnUrl;
-  }
 
   // Create message blocks
   const messageBlocks = createSuccessMessageBlocks(context);
