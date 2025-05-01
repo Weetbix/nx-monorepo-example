@@ -27,10 +27,13 @@ function getCurrentCommitMessage() {
  * Creates a consistent message block format for all states
  * @param {Object} context - The semantic-release context
  * @param {String} status - Current status: 'pending', 'success', or 'failure'
- * @param {String} version - The version being released
  */
-function createMessageBlocks(context, status, version) {
-  const { options, env } = context;
+function createMessageBlocks(context, status) {
+  const {
+    options,
+    env,
+    nextRelease: { version },
+  } = context;
 
   const packageName = options.executorContext.projectName;
 
@@ -122,8 +125,7 @@ function createStartMessageBlocks(context) {
  * Creates message blocks for the release success notification
  */
 function createSuccessMessageBlocks(context) {
-  const { nextRelease } = context;
-  return createMessageBlocks(context, 'success', nextRelease.version);
+  return createMessageBlocks(context, 'success');
 }
 
 /**
