@@ -259,8 +259,10 @@ async function prepare(pluginConfig, context) {
   } = context;
 
   // Log the entire context and env object for debugging
-  console.log('ENTIRE CONTEXT:', JSON.stringify(context, null, 2));
+  // console.log('ENTIRE CONTEXT:', JSON.stringify(context, null, 2));
   console.log('ENTIRE ENV OBJECT:', JSON.stringify(env, null, 2));
+  console.log({ name: context.options.executorContext.projectName });
+
 
   const {
     SEMANTIC_RELEASE_PACKAGE,
