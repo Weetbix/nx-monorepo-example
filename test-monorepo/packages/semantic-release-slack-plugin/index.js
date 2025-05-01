@@ -10,46 +10,96 @@ let channelId;
 function createStartMessageBlocks(context) {
   const { nextRelease, branch } = context;
   const repoUrl = context.options.repositoryUrl || '';
-  
+  const packageName = context.env.npm_package_name || 'package';
+
+  // Determine release types
+  let releaseTypes = context.releaseTypes || ['npm']; // Default to npm if not specified
+
+  // Auto-detect S3 publishing if not explicitly configured
+  if (!context.releaseTypesExplicit && detectS3Publishing(context)) {
+    if (!releaseTypes.includes('s3')) {
+      releaseTypes = [...releaseTypes, 's3'];
+    }
+  }
+
+  // Format release types for display
+  const releaseTypesText = releaseTypes
+    .map((type) => type.toUpperCase())
+    .join(' & ');
+
   return [
     {
       type: 'header',
       text: {
         type: 'plain_text',
-        text: `Release process started for ${context.env.npm_package_name || 'package'}`,
-        emoji: true
-      }
+        text: `Release process started for ${packageName}`,
+        emoji: true,
+      },
     },
     {
       type: 'section',
       fields: [
         {
           type: 'mrkdwn',
-          text: `*Branch:*\n${branch.name}`
+          text: `*Branch:*\n${branch.name}`,
         },
         {
           type: 'mrkdwn',
-          text: `*Status:*\n:hourglass: In Progress`
-        }
-      ]
+          text: `*Status:*\n:hourglass: In Progress`,
+        },
+      ],
     },
     {
       type: 'section',
       text: {
         type: 'mrkdwn',
-        text: `Starting release process for version ${nextRelease?.version || 'unknown'}`
-      }
+        text: `Starting ${releaseTypesText} release process for version ${
+          nextRelease?.version || 'unknown'
+        }`,
+      },
     },
     {
       type: 'context',
       elements: [
         {
           type: 'mrkdwn',
-          text: `${repoUrl ? `<${repoUrl}|Repository>` : 'Repository'}`
-        }
-      ]
-    }
+          text: `${repoUrl ? `<${repoUrl}|Repository>` : 'Repository'}`,
+        },
+      ],
+    },
   ];
+}
+
+/**
+ * Detect if S3 publishing is being used
+ */
+function detectS3Publishing(context) {
+  if (!context || !context.options || !context.options.plugins) {
+    return false;
+  }
+
+  const plugins = context.options.plugins;
+
+  // Check for @semantic-release/exec with publish-to-s3.js script
+  return plugins.some((plugin) => {
+    if (!Array.isArray(plugin) || plugin.length < 2) {
+      return false;
+    }
+
+    const [pluginName, pluginConfig] = plugin;
+
+    if (pluginName !== '@semantic-release/exec') {
+      return false;
+    }
+
+    // Check if publishCmd contains publish-to-s3.js
+    return (
+      pluginConfig &&
+      pluginConfig.publishCmd &&
+      typeof pluginConfig.publishCmd === 'string' &&
+      pluginConfig.publishCmd.includes('publish-to-s3.js')
+    );
+  });
 }
 
 /**
@@ -58,73 +108,76 @@ function createStartMessageBlocks(context) {
 function createSuccessMessageBlocks(context) {
   const { nextRelease } = context;
   const repoUrl = context.options.repositoryUrl || '';
-  const releaseUrl = nextRelease.gitHead ? 
-    `${repoUrl}/releases/tag/${nextRelease.gitHead}` : '';
   const packageName = context.env.npm_package_name || 'package';
-  
+
+  // Get release types from context
+  const releaseTypes = context.releaseTypes || ['npm'];
+
+  // Generate release links
+  const releaseLinks = [];
+
+  if (releaseTypes.includes('npm')) {
+    const npmUrl = `https://www.npmjs.com/package/${packageName}/v/${nextRelease.version}`;
+    releaseLinks.push(`<${npmUrl}|NPM Release>`);
+  }
+
+  if (releaseTypes.includes('s3')) {
+    // Try to extract CDN URL from context, or use default format
+    const cdnUrl =
+      context.cdnUrl ||
+      process.env.CDN_URL ||
+      `https://cdn.example.com/${packageName}/${nextRelease.version}/`;
+
+    releaseLinks.push(`<${cdnUrl}|S3 Release>`);
+  }
+
+  // Default git release link
+  const gitReleaseUrl = nextRelease.gitHead
+    ? `${repoUrl}/releases/tag/${nextRelease.gitHead}`
+    : '';
+
+  if (gitReleaseUrl) {
+    releaseLinks.push(`<${gitReleaseUrl}|Git Release>`);
+  }
+
+  // Create a compact message for multi-package releases
   return [
-    {
-      type: 'header',
-      text: {
-        type: 'plain_text',
-        text: `Release successful for ${packageName} v${nextRelease.version}`,
-        emoji: true
-      }
-    },
     {
       type: 'section',
       fields: [
         {
           type: 'mrkdwn',
-          text: `*Version:*\nv${nextRelease.version}`
+          text: `*${packageName} v${nextRelease.version}*\n:white_check_mark: Success`,
         },
-        {
-          type: 'mrkdwn',
-          text: `*Status:*\n:white_check_mark: Success`
-        }
-      ]
+      ],
     },
-    {
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: 'Release notes:'
-      }
-    },
-    {
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: nextRelease.notes ? `:arrow_down: *<#|Click to expand>*` : 'No release notes available'
-      },
-      accessory: nextRelease.notes ? {
-        type: 'button',
-        text: {
-          type: 'plain_text',
-          text: 'View Release Notes',
-          emoji: true
-        },
-        action_id: 'view_release_notes'
-      } : null
-    },
-    nextRelease.notes ? {
-      type: 'context',
-      elements: [
-        {
-          type: 'mrkdwn',
-          text: `${nextRelease.notes}`
-        }
-      ]
-    } : null,
     {
       type: 'context',
       elements: [
         {
           type: 'mrkdwn',
-          text: releaseUrl ? `<${releaseUrl}|View Release>` : 'Release completed'
+          text: releaseLinks.join(' | '),
+        },
+      ],
+    },
+    nextRelease.notes
+      ? {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `:arrow_down: *<#|Release notes>*`,
+          },
+          accessory: {
+            type: 'button',
+            text: {
+              type: 'plain_text',
+              text: 'View',
+              emoji: true,
+            },
+            action_id: `view_notes_${packageName}_${nextRelease.version}`,
+          },
         }
-      ]
-    }
+      : null,
   ].filter(Boolean);
 }
 
@@ -138,29 +191,29 @@ function createFailureMessageBlocks(context) {
       text: {
         type: 'plain_text',
         text: `Release failed for ${context.env.npm_package_name || 'package'}`,
-        emoji: true
-      }
+        emoji: true,
+      },
     },
     {
       type: 'section',
       fields: [
         {
           type: 'mrkdwn',
-          text: `*Branch:*\n${context.branch.name}`
+          text: `*Branch:*\n${context.branch.name}`,
         },
         {
           type: 'mrkdwn',
-          text: `*Status:*\n:x: Failed`
-        }
-      ]
+          text: `*Status:*\n:x: Failed`,
+        },
+      ],
     },
     {
       type: 'section',
       text: {
         type: 'mrkdwn',
-        text: `The release process has failed. Please check the logs for more information.`
-      }
-    }
+        text: `The release process has failed. Please check the logs for more information.`,
+      },
+    },
   ];
 }
 
@@ -168,39 +221,63 @@ function createFailureMessageBlocks(context) {
  * A semantic-release plugin that posts release updates to Slack
  * @param {Object} pluginConfig - The plugin configuration
  * @param {string} pluginConfig.channelId - The Slack channel ID to post to
+ * @param {Array} pluginConfig.releaseTypes - The types of releases being performed ['npm', 's3']
+ * @param {string} pluginConfig.cdnUrl - Custom URL for S3/CDN releases
  * @param {Object} context - The semantic-release context
  * @returns {Object} The plugin object with lifecycle methods
  */
 async function prepare(pluginConfig, context) {
   const { logger } = context;
-  
+
+  // Pass release types from pluginConfig to context
+  if (pluginConfig.releaseTypes) {
+    context.releaseTypes = pluginConfig.releaseTypes;
+    context.releaseTypesExplicit = true;
+  } else {
+    context.releaseTypes = ['npm'];
+    context.releaseTypesExplicit = false;
+
+    // Auto-detect S3 publishing if not explicitly configured
+    if (detectS3Publishing(context)) {
+      context.releaseTypes.push('s3');
+    }
+  }
+
+  context.cdnUrl = pluginConfig.cdnUrl;
+
   // Create message blocks
   const messageBlocks = createStartMessageBlocks(context);
-  
+
   const slackToken = process.env.SLACK_BOT_TOKEN;
   channelId = process.env.SLACK_RELEASE_CHANNEL_ID;
-  
+
   if (!slackToken) {
-    logger.log('No Slack token found in environment variables (SLACK_BOT_TOKEN). Skipping Slack notification.');
+    logger.log(
+      'No Slack token found in environment variables (SLACK_BOT_TOKEN). Skipping Slack notification.'
+    );
     return;
   }
-  
+
   if (!channelId) {
-    logger.log('No Slack channel ID found in environment variables (SLACK_RELEASE_CHANNEL_ID). Skipping Slack notification.');
+    logger.log(
+      'No Slack channel ID found in environment variables (SLACK_RELEASE_CHANNEL_ID). Skipping Slack notification.'
+    );
     return;
   }
-  
+
   slackClient = new WebClient(slackToken);
-  
+
   logger.log('Posting release start notification to Slack...');
-  
+
   try {
     const response = await slackClient.chat.postMessage({
       channel: channelId,
       blocks: messageBlocks,
-      text: `Release process started for ${context.env.npm_package_name || 'package'}`
+      text: `Release process started for ${
+        context.env.npm_package_name || 'package'
+      }`,
     });
-    
+
     messageTs = response.ts;
     logger.log(`Posted to Slack, message timestamp: ${messageTs}`);
   } catch (error) {
@@ -213,25 +290,46 @@ async function prepare(pluginConfig, context) {
  */
 async function success(pluginConfig, context) {
   const { logger } = context;
-  
+
+  // Pass release types from pluginConfig to context if not already set
+  if (!context.releaseTypes) {
+    if (pluginConfig.releaseTypes) {
+      context.releaseTypes = pluginConfig.releaseTypes;
+      context.releaseTypesExplicit = true;
+    } else {
+      context.releaseTypes = ['npm'];
+      context.releaseTypesExplicit = false;
+
+      // Auto-detect S3 publishing if not explicitly configured
+      if (detectS3Publishing(context)) {
+        context.releaseTypes.push('s3');
+      }
+    }
+    context.cdnUrl = pluginConfig.cdnUrl;
+  }
+
   // Create message blocks
   const messageBlocks = createSuccessMessageBlocks(context);
-  
+
   if (!slackClient || !messageTs) {
-    logger.log('Slack client not initialized or no message to update. Skipping Slack notification.');
+    logger.log(
+      'Slack client not initialized or no message to update. Skipping Slack notification.'
+    );
     return;
   }
-  
+
   logger.log('Posting release success notification to Slack...');
-  
+
   try {
     await slackClient.chat.update({
       channel: channelId,
       ts: messageTs,
       blocks: messageBlocks,
-      text: `Release successful for ${context.env.npm_package_name || 'package'} v${context.nextRelease.version}`
+      text: `Release successful for ${
+        context.env.npm_package_name || 'package'
+      } v${context.nextRelease.version}`,
     });
-    
+
     logger.log('Successfully updated Slack message with release information');
   } catch (error) {
     logger.error('Error updating Slack message:', error);
@@ -243,29 +341,31 @@ async function success(pluginConfig, context) {
  */
 async function fail(pluginConfig, context) {
   const { logger } = context;
-  
+
   // Create message blocks
   const messageBlocks = createFailureMessageBlocks(context);
-  
+
   if (!slackClient || !messageTs) {
-    logger.log('Slack client not initialized or no message to update. Skipping Slack notification.');
+    logger.log(
+      'Slack client not initialized or no message to update. Skipping Slack notification.'
+    );
     return;
   }
-  
+
   logger.log('Posting release failure notification to Slack...');
-  
+
   try {
     await slackClient.chat.update({
       channel: channelId,
       ts: messageTs,
       blocks: messageBlocks,
-      text: `Release failed for ${context.env.npm_package_name || 'package'}`
+      text: `Release failed for ${context.env.npm_package_name || 'package'}`,
     });
-    
+
     logger.log('Successfully updated Slack message with failure information');
   } catch (error) {
     logger.error('Error updating Slack message:', error);
   }
 }
 
-module.exports = { prepare, success, fail }; 
+module.exports = { prepare, success, fail };
