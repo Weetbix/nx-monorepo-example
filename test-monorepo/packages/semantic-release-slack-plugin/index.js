@@ -173,20 +173,23 @@ function createFailureMessageBlocks(context) {
  */
 async function prepare(pluginConfig, context) {
   const { logger } = context;
-  const { slackToken, channelId: configChannelId } = pluginConfig;
   
   // Create message blocks
   const messageBlocks = createStartMessageBlocks(context);
   
+  const slackToken = process.env.SLACK_BOT_TOKEN;
+  channelId = process.env.SLACK_RELEASE_CHANNEL_ID;
+  
   if (!slackToken) {
-    throw new Error('No Slack token provided. Set the slackToken option in your plugin configuration.');
+    logger.log('No Slack token found in environment variables (SLACK_BOT_TOKEN). Skipping Slack notification.');
+    return;
   }
   
-  if (!configChannelId) {
-    throw new Error('No Slack channel ID provided. Set the channelId option in your plugin configuration.');
+  if (!channelId) {
+    logger.log('No Slack channel ID found in environment variables (SLACK_RELEASE_CHANNEL_ID). Skipping Slack notification.');
+    return;
   }
   
-  channelId = configChannelId;
   slackClient = new WebClient(slackToken);
   
   logger.log('Posting release start notification to Slack...');
@@ -215,7 +218,7 @@ async function success(pluginConfig, context) {
   const messageBlocks = createSuccessMessageBlocks(context);
   
   if (!slackClient || !messageTs) {
-    logger.error('Slack client not initialized or no message to update');
+    logger.log('Slack client not initialized or no message to update. Skipping Slack notification.');
     return;
   }
   
@@ -245,7 +248,7 @@ async function fail(pluginConfig, context) {
   const messageBlocks = createFailureMessageBlocks(context);
   
   if (!slackClient || !messageTs) {
-    logger.error('Slack client not initialized or no message to update');
+    logger.log('Slack client not initialized or no message to update. Skipping Slack notification.');
     return;
   }
   
