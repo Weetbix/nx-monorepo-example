@@ -69,7 +69,7 @@ function createMessageAttachment(context, status) {
   const statusConfig = statusConfigs[status] || statusConfigs.default;
 
   const workflowUrl = `${env.GITHUB_SERVER_URL}/${env.GITHUB_REPOSITORY}/actions/runs/${env.GITHUB_RUN_ID}`;
-  const statusDisplay = `<${workflowUrl}|${statusConfig.emoji} ${statusConfig.text}>`;
+  const statusDisplay = `<${workflowUrl}|View workflow>`;
   const commitTitle = getCurrentCommitMessage();
   const prNumber = extractPrNumber(commitTitle);
   const prLink = `https://github.com/${env.GITHUB_REPOSITORY}/pull/${prNumber}`;
@@ -81,23 +81,23 @@ function createMessageAttachment(context, status) {
     blocks: [
       {
         type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `*${statusConfig.emoji} ${statusConfig.message}*`
+        }
+      },
+      {
+        type: 'section',
         fields: [
           {
             type: 'mrkdwn',
-            text: `*${statusConfig.message}*`,
+            text: `<${prLink}|${commitTitle}>`,
           },
           {
             type: 'mrkdwn',
             text: statusDisplay,
           },
         ],
-      },
-      {
-        type: 'section',
-        text: {
-          type: 'mrkdwn',
-          text: `<${prLink}|${commitTitle}>`,
-        },
       },
     ],
   };
