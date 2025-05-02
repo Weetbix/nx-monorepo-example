@@ -31,10 +31,5 @@ module.exports = {
     { type: 'fix', release: 'patch' },
     { type: 'perf', release: 'patch' },
   ],
-  plugins: [
-    ['@rebilly/semantic-release-slack-plugin', {
-      slackToken: process.env.SLACK_BOT_TOKEN,
-      channelId: process.env.SLACK_RELEASE_CHANNEL_ID
-    }]
-  ]
+  plugins: ['@rebilly/semantic-release-slack-plugin'],
 };
