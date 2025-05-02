@@ -106,10 +106,10 @@ function createMessageAttachment(context, status) {
       .reverse()
       .filter((release) => release.url && release.name)
       .map((release) => {
-        // remove anything in parenthesis in the release names
+        // shorten npm release names
         return {
           ...release,
-          name: release.name.replace(/\s*(\(.*?\))/g, ''),
+          name: release.name.includes('npm') ? 'npm' : release.name,
         };
       })
       .forEach((release) => {
@@ -121,7 +121,7 @@ function createMessageAttachment(context, status) {
       // Replace the workflow with packages + workflow
       attachment.blocks[0].fields[1] = {
         type: 'mrkdwn',
-        text: `${releaseLinks.join(' | ')} | <${workflowUrl}|workflow>`,
+        text: `🔗 ${releaseLinks.join(' | ')} | <${workflowUrl}|workflow>`,
       };
     }
   }
