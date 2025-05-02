@@ -51,19 +51,19 @@ function createMessageAttachment(
       emoji: ':hourglass:',
       text: 'In Progress',
       color: '#3AA3E3', // Blue
-      message: `Releasing ${packageName} \`v${version}\``,
+      message: `Releasing *${packageName}* \`v${version}\``,
     },
     success: {
       emoji: ':white_check_mark:',
       text: 'Success',
       color: '#36a64f', // Green
-      message: `Released ${packageName} \`v${version}\``,
+      message: `Released *${packageName}* \`v${version}\``,
     },
     failure: {
       emoji: ':x:',
       text: 'Failed',
       color: '#E01E5A', // Red
-      message: `Release failed for ${packageName}`,
+      message: `Release failed for *${packageName}*`,
     },
   };
 
@@ -111,7 +111,7 @@ function createMessageAttachment(
         fields: [
           {
             type: 'mrkdwn',
-            text: `*${statusConfig.emoji} ${statusConfig.message}*`,
+            text: `${statusConfig.emoji} ${statusConfig.message}`,
           },
           {
             type: 'mrkdwn',
