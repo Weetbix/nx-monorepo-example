@@ -34,5 +34,3 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           SLACK_RELEASE_CHANNEL_ID: ${{ secrets.SLACK_RELEASE_CHANNEL_ID }}
-          SLACK_NAME: "TEST NAME"
-          SLACK_ICON: "rocket"
