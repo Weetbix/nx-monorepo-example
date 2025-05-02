@@ -65,7 +65,7 @@ function createMessageAttachment(context, status) {
   const prNumber = extractPrNumber(commitTitle);
   const prLink = `https://github.com/${env.GITHUB_REPOSITORY}/pull/${prNumber}`;
 
-  const links = [
+  let links = [
     {
       text: 'workflow',
       url: workflowUrl,
