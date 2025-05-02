@@ -1,44 +1,52 @@
-const { WebClient } = require('@slack/web-api');
-const { execSync } = require('child_process');
+import { WebClient } from '@slack/web-api';
+import { execSync } from 'child_process';
+import type { Context, Config, Release } from 'semantic-release';
 
-let slackClient;
-let messageTs;
-let channelId;
+// Add releases item to the context, since I know it exists
+interface ExtendedContext extends Context {
+  releases: Release[];
+}
+
+let slackClient: WebClient;
+let messageTs: string;
+let channelId: string;
 
 /**
  * Extracts PR number from commit message
- * @param {String} message - Commit message
- * @returns {String} - PR number
  */
-function extractPrNumber(message) {
+function extractPrNumber(message: string) {
   const match = message.match(/\(#(\d+)\)$/);
   return match?.[1] || null;
 }
 
-/**
- * Get current commit message using git log
- * @returns {String} - Current commit message
- */
 function getCurrentCommitMessage() {
   return execSync('git log -1 --pretty=%B').toString().trim();
 }
 
 /**
  * Creates a consistent message attachment format for all states
- * @param {Object} context - The semantic-release context
- * @param {String} status - Current status: 'pending', 'success', or 'failure'
+ * @param context The semantic-release context
+ * @param status Current status: 'pending', 'success', or 'failure'
  */
-function createMessageAttachment(context, status) {
-  const {
-    options,
-    env,
-    nextRelease: { version },
-  } = context;
+function createMessageAttachment(
+  context: ExtendedContext,
+  status: 'pending' | 'success' | 'failure'
+) {
+  const { options, env, nextRelease } = context;
 
-  const packageName = options.executorContext.projectName;
+  const version = nextRelease?.version || '';
+  const packageName = options?.executorContext?.projectName || '';
 
   // Status configurations
-  const statusConfigs = {
+  const statusConfigs: Record<
+    'pending' | 'success' | 'failure',
+    {
+      emoji: string;
+      text: string;
+      color: string;
+      message: string;
+    }
+  > = {
     pending: {
       emoji: ':hourglass:',
       text: 'In Progress',
@@ -65,7 +73,10 @@ function createMessageAttachment(context, status) {
   const prNumber = extractPrNumber(commitTitle);
   const prLink = `https://github.com/${env.GITHUB_REPOSITORY}/pull/${prNumber}`;
 
-  let links = [
+  let links: {
+    text: string;
+    url: string;
+  }[] = [
     {
       text: 'workflow',
       url: workflowUrl,
@@ -73,17 +84,17 @@ function createMessageAttachment(context, status) {
   ];
 
   // Generate release links (only for success)
-  if (status === 'success') {
+  if (status === 'success' && context.releases) {
     links = [
       ...context.releases
         // Make NPM releases the first ones
         .reverse()
-        .filter((release) => release.url && release.name)
-        .map((release) => {
+        .filter((release: Release) => release.url && release.name)
+        .map((release: Release) => {
           return {
-            url: release.url,
+            url: release.url!,
             // shorten npm release names
-            text: release.name.includes('npm') ? 'npm' : release.name,
+            text: release?.name?.includes('npm') ? 'npm' : release.name!,
           };
         }),
       ...links,
@@ -124,46 +135,14 @@ function createMessageAttachment(context, status) {
 }
 
 /**
- * Creates message attachment for the release start notification
+ * Sends a release start notification to Slack
  */
-function createStartMessageAttachment(context) {
-  return createMessageAttachment(context, 'pending');
-}
-
-/**
- * Creates message attachment for the release success notification
- */
-function createSuccessMessageAttachment(context) {
-  return createMessageAttachment(context, 'success');
-}
-
-/**
- * Creates message attachment for the release failure notification
- */
-function createFailureMessageAttachment(context) {
-  return createMessageAttachment(context, 'failure');
-}
-
-/**
- * A semantic-release plugin that posts release updates to Slack
- * @param {Object} pluginConfig - The plugin configuration
- * @param {string} pluginConfig.channelId - The Slack channel ID to post to
- * @param {string} pluginConfig.cdnUrl - Custom URL for S3/CDN releases
- * @param {Object} context - The semantic-release context
- * @returns {Object} The plugin object with lifecycle methods
- */
-async function prepare(pluginConfig, context) {
-  const { logger, env, options } = context;
-
-  // Add GitHub environment variables to context.env for use in message blocks
-  context.env = env;
-
-  // Create message attachment
-  const messageAttachment = createStartMessageAttachment(context);
+async function prepare(_pluginConfig: unknown, context: ExtendedContext) {
+  const { logger, env } = context;
+  const messageAttachment = createMessageAttachment(context, 'pending');
 
   slackClient = new WebClient(env.SLACK_BOT_TOKEN);
   channelId = env.SLACK_RELEASE_CHANNEL_ID;
-  const packageName = options.executorContext.projectName;
 
   logger.log('Posting release start notification to Slack...');
   const response = await slackClient.chat.postMessage({
@@ -172,19 +151,16 @@ async function prepare(pluginConfig, context) {
     unfurl_links: false,
     unfurl_media: false,
   });
-  messageTs = response.ts;
+  messageTs = response.ts as string;
   logger.log(`Posted to Slack, message timestamp: ${messageTs}`);
 }
 
 /**
  * Update the Slack message with success information
  */
-async function success(pluginConfig, context) {
-  const { logger, nextRelease, options } = context;
-
-  // Create message attachment
-  const messageAttachment = createSuccessMessageAttachment(context);
-  const packageName = options.executorContext.projectName;
+async function success(_pluginConfig: unknown, context: ExtendedContext) {
+  const { logger } = context;
+  const messageAttachment = createMessageAttachment(context, 'success');
 
   logger.log('Posting release success notification to Slack...');
   await slackClient.chat.update({
@@ -200,12 +176,9 @@ async function success(pluginConfig, context) {
 /**
  * Update the Slack message with failure information
  */
-async function fail(pluginConfig, context) {
-  const { logger, options } = context;
-
-  // Create message attachment
-  const messageAttachment = createFailureMessageAttachment(context);
-  const packageName = options.executorContext.projectName;
+async function fail(_pluginConfig: unknown, context: ExtendedContext) {
+  const { logger } = context;
+  const messageAttachment = createMessageAttachment(context, 'failure');
 
   logger.log('Posting release failure notification to Slack...');
   await slackClient.chat.update({
@@ -218,4 +191,4 @@ async function fail(pluginConfig, context) {
   logger.log('Successfully updated Slack message with failure information');
 }
 
-module.exports = { prepare, success, fail };
+export { prepare, success, fail };

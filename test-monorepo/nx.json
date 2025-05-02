@@ -20,7 +20,10 @@
         "buildTarget": "{projectName}:build",
         "outputPath": "./packages/{projectName}",
         "preset": "conventionalcommits"
-      }
+      },
+      "dependsOn": [
+        "semantic-release-slack-plugin:build"
+      ]
     }
   }
 }
