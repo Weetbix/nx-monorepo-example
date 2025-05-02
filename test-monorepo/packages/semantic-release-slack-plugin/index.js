@@ -82,7 +82,7 @@ function createMessageAttachment(context, status) {
           },
           {
             type: 'mrkdwn',
-            text: `<${prLink}|${commitTitle}>`,
+            text: `*PR:* <${prLink}|${commitTitle}>`,
           },
         ],
       },
@@ -91,11 +91,11 @@ function createMessageAttachment(context, status) {
         fields: [
           {
             type: 'mrkdwn',
-            text: '⠀', // Empty character for consistent alignment
+            text: '*Packages:* ',
           },
           {
             type: 'mrkdwn',
-            text: `<${workflowUrl}|View workflow>`,
+            text: `*Workflow:* <${workflowUrl}|View>`,
           },
         ],
       },
@@ -127,7 +127,7 @@ function createMessageAttachment(context, status) {
       // Replace the placeholder with actual release links
       attachment.blocks[1].fields[0] = {
         type: 'mrkdwn',
-        text: releaseLinks.join(' | '),
+        text: `*Packages:* ${releaseLinks.join(' | ')}`,
       };
     }
   }
