@@ -43,19 +43,19 @@ function createMessageAttachment(context, status) {
       emoji: ':hourglass:',
       text: 'In Progress',
       color: '#3AA3E3', // Blue
-      message: `Releasing ${packageName} ${version}`,
+      message: `Releasing \`${packageName}\` \`v${version}\``,
     },
     success: {
       emoji: ':white_check_mark:',
       text: 'Success',
       color: '#36a64f', // Green
-      message: `Released ${packageName} v${version}`,
+      message: `Released \`${packageName}\` \`v${version}\``,
     },
     failure: {
       emoji: ':x:',
       text: 'Failed',
       color: '#E01E5A', // Red
-      message: `Release failed for ${packageName}`,
+      message: `Release failed for \`${packageName}\``,
     },
   };
 
@@ -106,10 +106,10 @@ function createMessageAttachment(context, status) {
       .reverse()
       .filter((release) => release.url && release.name)
       .map((release) => {
-        // remove anything in brackets in the release names
+        // remove anything in parenthesis in the release names
         return {
           ...release,
-          name: release.name.replace(/\s*\[.*?\]$/, ''),
+          name: release.name.replace(/\s*(\(.*?\))/g, ''),
         };
       })
       .forEach((release) => {
