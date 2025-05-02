@@ -88,12 +88,7 @@ function createMessageAttachment(context, status) {
       },
       {
         type: 'section',
-        fields: [
-          {
-            type: 'mrkdwn',
-            text: `<${workflowUrl}|View workflow>`,
-          },
-        ],
+        fields: [],  // Start with empty fields, we'll add them conditionally based on status
       },
     ],
   };
@@ -120,11 +115,19 @@ function createMessageAttachment(context, status) {
 
     // Get the second section and add release links to its fields
     const secondSection = attachment.blocks[1];
+    // First add release links (left column
     secondSection.fields.push({
       type: 'mrkdwn',
       text: releaseLinks.join(' | '),
     });
   }
+
+  // Add workflow link to the second row (right column)
+  const secondSection = attachment.blocks[1];
+  secondSection.fields.push({
+    type: 'mrkdwn',
+    text: `<${workflowUrl}|View workflow>`,
+  });
 
   return attachment;
 }
