@@ -82,7 +82,7 @@ function createMessageAttachment(context, status) {
           },
           {
             type: 'mrkdwn',
-            text: `*Workflow:* <${workflowUrl}|view>`,
+            text: `<${workflowUrl}|workflow>`,
           },
         ],
       },
@@ -121,7 +121,7 @@ function createMessageAttachment(context, status) {
       // Replace the workflow with packages + workflow
       attachment.blocks[0].fields[1] = {
         type: 'mrkdwn',
-        text: `${releaseLinks.join(' | ')} | *Workflow:* <${workflowUrl}|view>`,
+        text: `${releaseLinks.join(' | ')} | <${workflowUrl}|workflow>`,
       };
     }
   }
