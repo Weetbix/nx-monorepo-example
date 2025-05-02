@@ -150,6 +150,8 @@ async function prepare(_pluginConfig: unknown, context: ExtendedContext) {
     attachments: [messageAttachment],
     unfurl_links: false,
     unfurl_media: false,
+    username: 'new guy',
+    icon_emoji: 'rocket',
   });
   messageTs = response.ts as string;
   logger.log(`Posted to Slack, message timestamp: ${messageTs}`);
