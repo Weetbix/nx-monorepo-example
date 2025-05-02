@@ -82,22 +82,16 @@ function createMessageAttachment(context, status) {
           },
           {
             type: 'mrkdwn',
-            text: `*PR:* <${prLink}|${commitTitle}>`,
+            text: `*Workflow:* <${workflowUrl}|view>`,
           },
         ],
       },
       {
         type: 'section',
-        fields: [
-          {
-            type: 'mrkdwn',
-            text: '⠀', // Invisible character for consistent alignment
-          },
-          {
-            type: 'mrkdwn',
-            text: `*Workflow:* <${workflowUrl}|view>`,
-          },
-        ],
+        text: {
+          type: 'mrkdwn',
+          text: `*PR:* <${prLink}|${commitTitle}>`,
+        },
       },
     ],
   };
@@ -124,10 +118,10 @@ function createMessageAttachment(context, status) {
 
     // Update release links if we have any
     if (releaseLinks.length > 0) {
-      // Replace the placeholder with actual release links
-      attachment.blocks[1].fields[0] = {
+      // Replace the workflow with packages + workflow
+      attachment.blocks[0].fields[1] = {
         type: 'mrkdwn',
-        text: `*Packages:* ${releaseLinks.join(' | ')}`,
+        text: `${releaseLinks.join(' | ')} | *Workflow:* <${workflowUrl}|view>`,
       };
     }
   }
