@@ -150,8 +150,8 @@ async function prepare(_pluginConfig: unknown, context: ExtendedContext) {
     attachments: [messageAttachment],
     unfurl_links: false,
     unfurl_media: false,
-    username: 'new guy',
-    icon_emoji: 'rocket',
+    username: env.SLACK_BOT_USERNAME,
+    icon_emoji: env.SLACK_BOT_ICON_EMOJI,
   });
   messageTs = response.ts as string;
   logger.log(`Posted to Slack, message timestamp: ${messageTs}`);
@@ -161,7 +161,7 @@ async function prepare(_pluginConfig: unknown, context: ExtendedContext) {
  * Update the Slack message with success information
  */
 async function success(_pluginConfig: unknown, context: ExtendedContext) {
-  const { logger } = context;
+  const { logger, env } = context;
   const messageAttachment = createMessageAttachment(context, 'success');
 
   logger.log('Posting release success notification to Slack...');
@@ -171,6 +171,8 @@ async function success(_pluginConfig: unknown, context: ExtendedContext) {
     attachments: [messageAttachment],
     unfurl_links: false,
     unfurl_media: false,
+    username: env.SLACK_BOT_USERNAME,
+    icon_emoji: env.SLACK_BOT_ICON_EMOJI,
   });
   logger.log('Successfully updated Slack message with release information');
 }
@@ -179,7 +181,7 @@ async function success(_pluginConfig: unknown, context: ExtendedContext) {
  * Update the Slack message with failure information
  */
 async function fail(_pluginConfig: unknown, context: ExtendedContext) {
-  const { logger } = context;
+  const { logger, env } = context;
   const messageAttachment = createMessageAttachment(context, 'failure');
 
   logger.log('Posting release failure notification to Slack...');
@@ -189,6 +191,8 @@ async function fail(_pluginConfig: unknown, context: ExtendedContext) {
     attachments: [messageAttachment],
     unfurl_links: false,
     unfurl_media: false,
+    username: env.SLACK_BOT_USERNAME,
+    icon_emoji: env.SLACK_BOT_ICON_EMOJI,
   });
   logger.log('Successfully updated Slack message with failure information');
 }
