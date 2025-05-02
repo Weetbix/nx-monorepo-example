@@ -15,6 +15,9 @@
     }
   },
   "targetDefaults": {
+    "build": {
+      "dependsOn": ["^build"]
+    },
     "semantic-release": {
       "options": {
         "buildTarget": "{projectName}:build",
@@ -22,7 +25,11 @@
         "preset": "conventionalcommits"
       },
       "dependsOn": [
-        "semantic-release-slack-plugin:build"
+        "^build",
+        {
+          "projects": ["semantic-release-slack-plugin"],
+          "target": "build"
+        }
       ]
     }
   }
