@@ -9,13 +9,15 @@
     "build": "tsc"
   },
   "dependencies": {
-    "@slack/web-api": "^6.9.0",
-    "semantic-release": ">=18.0.0"
+    "@slack/web-api": "^6.9.0"
   },
   "devDependencies": {
     "@types/node": "^18.15.0",
     "@types/semantic-release": "^20.0.1",
     "rimraf": "^5.0.0",
     "typescript": "^5.0.0"
+  },
+  "peerDependencies": {
+    "semantic-release": ">=20.1.0"
   }
-} 
+}

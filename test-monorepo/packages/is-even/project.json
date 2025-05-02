@@ -5,8 +5,7 @@
   "projectType": "library",
   "targets": {
     "semantic-release": {
-      "executor": "@theunderscorer/nx-semantic-release:semantic-release",
-      "dependsOn": ["semantic-release-slack-plugin:build"]
+      "executor": "@theunderscorer/nx-semantic-release:semantic-release"
     }
   }
 }
