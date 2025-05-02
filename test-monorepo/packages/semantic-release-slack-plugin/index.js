@@ -43,26 +43,20 @@ function createMessageAttachment(context, status) {
       emoji: ':hourglass:',
       text: 'In Progress',
       color: '#3AA3E3', // Blue
-      message: `Releasing ${packageName} ${version}`
+      message: `Releasing ${packageName} ${version}`,
     },
     success: {
       emoji: ':white_check_mark:',
       text: 'Success',
       color: '#36a64f', // Green
-      message: `Release successful for ${packageName} v${version}`
+      message: `Released ${packageName} v${version}`,
     },
     failure: {
       emoji: ':x:',
       text: 'Failed',
       color: '#E01E5A', // Red
-      message: `Release failed for ${packageName}`
+      message: `Release failed for ${packageName}`,
     },
-    default: {
-      emoji: ':grey_question:',
-      text: 'Unknown',
-      color: '#CCCCCC', // Grey
-      message: `${packageName} v${version}`
-    }
   };
 
   // Get status config or use default
@@ -73,7 +67,7 @@ function createMessageAttachment(context, status) {
   const commitTitle = getCurrentCommitMessage();
   const prNumber = extractPrNumber(commitTitle);
   const prLink = `https://github.com/${env.GITHUB_REPOSITORY}/pull/${prNumber}`;
-  
+
   // Create the main attachment with colored sidebar
   const attachment = {
     color: statusConfig.color,
@@ -83,8 +77,8 @@ function createMessageAttachment(context, status) {
         type: 'section',
         text: {
           type: 'mrkdwn',
-          text: `*${statusConfig.emoji} ${statusConfig.message}*`
-        }
+          text: `*${statusConfig.emoji} ${statusConfig.message}*`,
+        },
       },
       {
         type: 'section',
@@ -108,7 +102,16 @@ function createMessageAttachment(context, status) {
 
     // Add links from context.releases
     context.releases
+      // Make NPM releases the first ones
+      .reverse()
       .filter((release) => release.url && release.name)
+      .map((release) => {
+        // remove anything in brackets in the release names
+        return {
+          ...release,
+          name: release.name.replace(/\s*\[.*?\]$/, ''),
+        };
+      })
       .forEach((release) => {
         releaseLinks.push(`<${release.url}|${release.name}>`);
       });
