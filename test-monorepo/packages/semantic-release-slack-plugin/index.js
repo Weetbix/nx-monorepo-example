@@ -91,7 +91,7 @@ function createMessageAttachment(context, status) {
         fields: [
           {
             type: 'mrkdwn',
-            text: '',
+            text: '⠀', // Invisible character for consistent alignment
           },
           {
             type: 'mrkdwn',
