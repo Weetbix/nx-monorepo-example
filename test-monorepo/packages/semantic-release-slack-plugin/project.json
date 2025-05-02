@@ -10,7 +10,7 @@
         "command": "tsc",
         "cwd": "packages/semantic-release-slack-plugin"
       },
-      "outputs": ["packages/semantic-release-slack-plugin/dist"]
+      "outputs": ["{workspaceRoot}/packages/semantic-release-slack-plugin/dist"]
     }
   }
 }
