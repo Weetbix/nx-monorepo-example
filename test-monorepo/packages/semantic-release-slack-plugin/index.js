@@ -59,14 +59,35 @@ function createMessageAttachment(context, status) {
     },
   };
 
-  // Get status config or use default
-  const statusConfig = statusConfigs[status] || statusConfigs.default;
-
+  const statusConfig = statusConfigs[status];
   const workflowUrl = `${env.GITHUB_SERVER_URL}/${env.GITHUB_REPOSITORY}/actions/runs/${env.GITHUB_RUN_ID}`;
-  const statusDisplay = `<${workflowUrl}|View workflow>`;
   const commitTitle = getCurrentCommitMessage();
   const prNumber = extractPrNumber(commitTitle);
   const prLink = `https://github.com/${env.GITHUB_REPOSITORY}/pull/${prNumber}`;
+
+  const links = [
+    {
+      text: 'workflow',
+      url: workflowUrl,
+    },
+  ];
+
+  // Generate release links (only for success)
+  if (status === 'success') {
+    links.unshift(
+      context.releases
+        // Make NPM releases the first ones
+        .reverse()
+        .filter((release) => release.url && release.name)
+        .map((release) => {
+          return {
+            url: release.url,
+            // shorten npm release names
+            name: release.name.includes('npm') ? 'npm' : release.name,
+          };
+        })
+    );
+  }
 
   // Create the main attachment with colored sidebar
   const attachment = {
@@ -82,7 +103,9 @@ function createMessageAttachment(context, status) {
           },
           {
             type: 'mrkdwn',
-            text: `<${workflowUrl}|workflow>`,
+            text: `🔗 ${links
+              .map((link) => `<${link.url}|${link.text}>`)
+              .join(' | ')}`,
           },
         ],
       },
@@ -95,36 +118,6 @@ function createMessageAttachment(context, status) {
       },
     ],
   };
-
-  // Generate release links (only for success)
-  if (status === 'success') {
-    const releaseLinks = [];
-
-    // Add links from context.releases
-    context.releases
-      // Make NPM releases the first ones
-      .reverse()
-      .filter((release) => release.url && release.name)
-      .map((release) => {
-        // shorten npm release names
-        return {
-          ...release,
-          name: release.name.includes('npm') ? 'npm' : release.name,
-        };
-      })
-      .forEach((release) => {
-        releaseLinks.push(`<${release.url}|${release.name}>`);
-      });
-
-    // Update release links if we have any
-    if (releaseLinks.length > 0) {
-      // Replace the workflow with packages + workflow
-      attachment.blocks[0].fields[1] = {
-        type: 'mrkdwn',
-        text: `🔗 ${releaseLinks.join(' | ')} | <${workflowUrl}|workflow>`,
-      };
-    }
-  }
 
   return attachment;
 }
