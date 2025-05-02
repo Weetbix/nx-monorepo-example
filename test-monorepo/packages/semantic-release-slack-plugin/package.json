@@ -4,6 +4,7 @@
   "description": "A semantic-release plugin for posting release updates to Slack",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "type": "module",
   "private": true,
   "scripts": {
     "build": "tsc"
