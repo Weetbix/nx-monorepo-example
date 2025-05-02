@@ -75,21 +75,23 @@ function createMessageAttachment(context, status) {
     blocks: [
       {
         type: 'section',
-        text: {
-          type: 'mrkdwn',
-          text: `*${statusConfig.emoji} ${statusConfig.message}*`,
-        },
+        fields: [
+          {
+            type: 'mrkdwn',
+            text: `*${statusConfig.emoji} ${statusConfig.message}*`,
+          },
+          {
+            type: 'mrkdwn',
+            text: `<${prLink}|${commitTitle}>`,
+          },
+        ],
       },
       {
         type: 'section',
         fields: [
           {
             type: 'mrkdwn',
-            text: `<${prLink}|${commitTitle}>`,
-          },
-          {
-            type: 'mrkdwn',
-            text: statusDisplay,
+            text: `<${workflowUrl}|View workflow>`,
           },
         ],
       },
@@ -116,14 +118,11 @@ function createMessageAttachment(context, status) {
         releaseLinks.push(`<${release.url}|${release.name}>`);
       });
 
-    attachment.blocks.push({
-      type: 'context',
-      elements: [
-        {
-          type: 'mrkdwn',
-          text: releaseLinks.join(' | '),
-        },
-      ],
+    // Get the second section and add release links to its fields
+    const secondSection = attachment.blocks[1];
+    secondSection.fields.push({
+      type: 'mrkdwn',
+      text: releaseLinks.join(' | '),
     });
   }
 
