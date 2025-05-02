@@ -74,8 +74,8 @@ function createMessageAttachment(context, status) {
 
   // Generate release links (only for success)
   if (status === 'success') {
-    links.unshift(
-      context.releases
+    links = [
+      ...context.releases
         // Make NPM releases the first ones
         .reverse()
         .filter((release) => release.url && release.name)
@@ -83,10 +83,11 @@ function createMessageAttachment(context, status) {
           return {
             url: release.url,
             // shorten npm release names
-            name: release.name.includes('npm') ? 'npm' : release.name,
+            text: release.name.includes('npm') ? 'npm' : release.name,
           };
-        })
-    );
+        }),
+      ...links,
+    ];
   }
 
   // Create the main attachment with colored sidebar
