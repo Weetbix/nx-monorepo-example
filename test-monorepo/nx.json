@@ -5,32 +5,18 @@
     "default": {
       "runner": "nx/tasks-runners/default",
       "options": {
-        "cacheableOperations": [
-          "build",
-          "lint",
-          "test",
-          "e2e"
-        ]
+        "cacheableOperations": ["build", "lint", "test", "e2e"]
       }
     }
   },
   "targetDefaults": {
-    "build": {
-      "dependsOn": ["^build"]
-    },
     "semantic-release": {
+      "dependsOn": ["^build"],
       "options": {
         "buildTarget": "{projectName}:build",
         "outputPath": "./packages/{projectName}",
         "preset": "conventionalcommits"
-      },
-      "dependsOn": [
-        "^build",
-        {
-          "projects": ["semantic-release-slack-plugin"],
-          "target": "build"
-        }
-      ]
+      }
     }
   }
 }
