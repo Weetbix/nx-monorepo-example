@@ -24,11 +24,11 @@ function getCurrentCommitMessage() {
 }
 
 /**
- * Creates a consistent message block format for all states
+ * Creates a consistent message attachment format for all states
  * @param {Object} context - The semantic-release context
  * @param {String} status - Current status: 'pending', 'success', or 'failure'
  */
-function createMessageBlocks(context, status) {
+function createMessageAttachment(context, status) {
   const {
     options,
     env,
@@ -38,23 +38,27 @@ function createMessageBlocks(context, status) {
   const packageName = options.executorContext.projectName;
 
   // Status-specific values
-  let statusEmoji, statusText;
+  let statusEmoji, statusText, statusColor;
   switch (status) {
     case 'pending':
       statusEmoji = ':hourglass:';
       statusText = 'In Progress';
+      statusColor = '#3AA3E3'; // Blue
       break;
     case 'success':
       statusEmoji = ':white_check_mark:';
       statusText = 'Success';
+      statusColor = '#36a64f'; // Green
       break;
     case 'failure':
       statusEmoji = ':x:';
       statusText = 'Failed';
+      statusColor = '#E01E5A'; // Red
       break;
     default:
       statusEmoji = ':grey_question:';
       statusText = 'Unknown';
+      statusColor = '#CCCCCC'; // Grey
   }
 
   const workflowUrl = `${env.GITHUB_SERVER_URL}/${env.GITHUB_REPOSITORY}/actions/runs/${env.GITHUB_RUN_ID}`;
@@ -63,30 +67,33 @@ function createMessageBlocks(context, status) {
   const prNumber = extractPrNumber(commitTitle);
   const prLink = `https://github.com/${env.GITHUB_REPOSITORY}/pull/${prNumber}`;
 
-  const blocks = [
-    {
-      type: 'section',
-      fields: [
-        {
+  // Create the main attachment with colored sidebar
+  const attachment = {
+    color: statusColor,
+    fallback: `${packageName} v${version} - ${statusText}`,
+    blocks: [
+      {
+        type: 'section',
+        fields: [
+          {
+            type: 'mrkdwn',
+            text: `*${packageName}* v${version}`,
+          },
+          {
+            type: 'mrkdwn',
+            text: statusDisplay,
+          },
+        ],
+      },
+      {
+        type: 'section',
+        text: {
           type: 'mrkdwn',
-          text: `*${packageName}* v${version}`,
+          text: `<${prLink}|${commitTitle}>`,
         },
-        {
-          type: 'mrkdwn',
-          text: statusDisplay,
-        },
-      ],
-    },
-  ];
-
-  // Add commit info
-  blocks.push({
-    type: 'section',
-    text: {
-      type: 'mrkdwn',
-      text: `<${prLink}|${commitTitle}>`,
-    },
-  });
+      },
+    ],
+  };
 
   // Generate release links (only for success)
   if (status === 'success') {
@@ -99,7 +106,7 @@ function createMessageBlocks(context, status) {
         releaseLinks.push(`<${release.url}|${release.name}>`);
       });
 
-    blocks.push({
+    attachment.blocks.push({
       type: 'context',
       elements: [
         {
@@ -110,29 +117,28 @@ function createMessageBlocks(context, status) {
     });
   }
 
-  return blocks;
+  return attachment;
 }
 
 /**
- * Creates message blocks for the release start notification
+ * Creates message attachment for the release start notification
  */
-function createStartMessageBlocks(context) {
-  // No need for special handling now since we can get commit info from options.commits
-  return createMessageBlocks(context, 'pending');
+function createStartMessageAttachment(context) {
+  return createMessageAttachment(context, 'pending');
 }
 
 /**
- * Creates message blocks for the release success notification
+ * Creates message attachment for the release success notification
  */
-function createSuccessMessageBlocks(context) {
-  return createMessageBlocks(context, 'success');
+function createSuccessMessageAttachment(context) {
+  return createMessageAttachment(context, 'success');
 }
 
 /**
- * Creates message blocks for the release failure notification
+ * Creates message attachment for the release failure notification
  */
-function createFailureMessageBlocks(context) {
-  return createMessageBlocks(context, 'failure');
+function createFailureMessageAttachment(context) {
+  return createMessageAttachment(context, 'failure');
 }
 
 /**
@@ -149,8 +155,8 @@ async function prepare(pluginConfig, context) {
   // Add GitHub environment variables to context.env for use in message blocks
   context.env = env;
 
-  // Create message blocks
-  const messageBlocks = createStartMessageBlocks(context);
+  // Create message attachment
+  const messageAttachment = createStartMessageAttachment(context);
 
   slackClient = new WebClient(env.SLACK_BOT_TOKEN);
   channelId = env.SLACK_RELEASE_CHANNEL_ID;
@@ -159,7 +165,7 @@ async function prepare(pluginConfig, context) {
   logger.log('Posting release start notification to Slack...');
   const response = await slackClient.chat.postMessage({
     channel: channelId,
-    blocks: messageBlocks,
+    attachments: [messageAttachment],
     text: `Release process started for ${packageName}`,
     unfurl_links: false,
     unfurl_media: false,
@@ -174,15 +180,15 @@ async function prepare(pluginConfig, context) {
 async function success(pluginConfig, context) {
   const { logger, nextRelease, options } = context;
 
-  // Create message blocks
-  const messageBlocks = createSuccessMessageBlocks(context);
+  // Create message attachment
+  const messageAttachment = createSuccessMessageAttachment(context);
   const packageName = options.executorContext.projectName;
 
   logger.log('Posting release success notification to Slack...');
   await slackClient.chat.update({
     channel: channelId,
     ts: messageTs,
-    blocks: messageBlocks,
+    attachments: [messageAttachment],
     text: `Release successful for ${packageName} v${nextRelease.version}`,
     unfurl_links: false,
     unfurl_media: false,
@@ -196,15 +202,15 @@ async function success(pluginConfig, context) {
 async function fail(pluginConfig, context) {
   const { logger, options } = context;
 
-  // Create message blocks
-  const messageBlocks = createFailureMessageBlocks(context);
+  // Create message attachment
+  const messageAttachment = createFailureMessageAttachment(context);
   const packageName = options.executorContext.projectName;
 
   logger.log('Posting release failure notification to Slack...');
   await slackClient.chat.update({
     channel: channelId,
     ts: messageTs,
-    blocks: messageBlocks,
+    attachments: [messageAttachment],
     text: `Release failed for ${packageName}`,
     unfurl_links: false,
     unfurl_media: false,
