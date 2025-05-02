@@ -2,15 +2,5 @@
   "name": "semantic-release-slack-plugin",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/semantic-release-slack-plugin",
-  "projectType": "library",
-  "targets": {
-    "build": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "tsc",
-        "cwd": "packages/semantic-release-slack-plugin"
-      },
-      "outputs": ["{workspaceRoot}/packages/semantic-release-slack-plugin/dist"]
-    }
-  }
+  "projectType": "library"
 }
