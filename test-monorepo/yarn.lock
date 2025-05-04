@@ -281,23 +281,42 @@
     read-package-json-fast "^2.0.3"
     which "^2.0.2"
 
-"@nrwl/devkit@19.6.0":
-  version "19.6.0"
-  resolved "https://registry.yarnpkg.com/@nrwl/devkit/-/devkit-19.6.0.tgz#28a8261d167ba8607fdfac1cba61f881c16739f8"
-  integrity sha512-WKvuShei1dmjUhbY1J62vkNhvIkcFIc4MPo0YnYzuBbxvNKWB6r3ICRc1BZuFYL3L7pPIEHUcdExyTdIZRDVqQ==
+"@nrwl/devkit@17.2.7":
+  version "17.2.7"
+  resolved "https://registry.yarnpkg.com/@nrwl/devkit/-/devkit-17.2.7.tgz#20c5fd8e0a2813940fdfb34523d4d77788b524ff"
+  integrity sha512-TISLlIH3xSWre2NLg0aMUBmTvMus+xUicaMeg8DWvwSXJJIMC5QFlB1hjw0VkyLsSraHpd5PWtyDqldHWRfKUQ==
   dependencies:
-    "@nx/devkit" "19.6.0"
+    "@nx/devkit" "17.2.7"
 
-"@nx/devkit@19.6.0":
-  version "19.6.0"
-  resolved "https://registry.yarnpkg.com/@nx/devkit/-/devkit-19.6.0.tgz#fbecb413c974e2fd507e62061e6753cb29e33634"
-  integrity sha512-sFDnP+KkR6m5VRi3ThS4Aymfo7squ48Qhkvpwkj3Y0W4q577+QrXlAS4tR9GZM0FAgQeF63kdZ1cLy39ZlGaWA==
+"@nrwl/devkit@17.3.2":
+  version "17.3.2"
+  resolved "https://registry.yarnpkg.com/@nrwl/devkit/-/devkit-17.3.2.tgz#7799253b7cdf790b82473c3680aa7efe808ceee1"
+  integrity sha512-31wh7dDZPM1YUCfhhk/ioHnUeoPIlKYLFLW0fGdw76Ow2nmTqrmxha2m0CSIR1/9En9GpYut2IdUdNh9CctNlA==
   dependencies:
-    "@nrwl/devkit" "19.6.0"
+    "@nx/devkit" "17.3.2"
+
+"@nx/devkit@17.2.7":
+  version "17.2.7"
+  resolved "https://registry.yarnpkg.com/@nx/devkit/-/devkit-17.2.7.tgz#aa5d2352a963a613e415b1d3167a5b87937b6fcb"
+  integrity sha512-RyJyFO5PkNhMrebpv93Bci6pRkrw6guyfX7Esl/5+O6UfN0ytnmaRIrbiVwftTQ6m/T08OWrJQHZMuByP0WWHQ==
+  dependencies:
+    "@nrwl/devkit" "17.2.7"
     ejs "^3.1.7"
     enquirer "~2.3.6"
     ignore "^5.0.4"
-    minimatch "9.0.3"
+    semver "7.5.3"
+    tmp "~0.2.1"
+    tslib "^2.3.0"
+
+"@nx/devkit@17.3.2", "@nx/devkit@^17.2.7":
+  version "17.3.2"
+  resolved "https://registry.yarnpkg.com/@nx/devkit/-/devkit-17.3.2.tgz#c10b3e5f9bc642881c24aa2e3878ca4290994a80"
+  integrity sha512-gbOIhwrZKCSSFFbh6nE6LLCvAU7mhSdBSnRiS14YBwJJMu4CRJ0IcaFz58iXqGWZefMivKtkNFtx+zqwUC4ziw==
+  dependencies:
+    "@nrwl/devkit" "17.3.2"
+    ejs "^3.1.7"
+    enquirer "~2.3.6"
+    ignore "^5.0.4"
     semver "^7.5.3"
     tmp "~0.2.1"
     tslib "^2.3.0"
@@ -730,13 +749,13 @@
     p-queue "^6.6.1"
     p-retry "^4.0.0"
 
-"@theunderscorer/nx-semantic-release@^2.12.0":
-  version "2.12.0"
-  resolved "https://registry.yarnpkg.com/@theunderscorer/nx-semantic-release/-/nx-semantic-release-2.12.0.tgz#188d23bbbaef6d4d80495fee78fc533cae1a110d"
-  integrity sha512-LsYQp14oCO8Bi/Qlj+HOvsn7oQRn8t3y3yQeQdW+RKI2SsCzy0cp1tfbS94oikn7bLl606cwpjmDh7CM4Hnhbg==
+"@theunderscorer/nx-semantic-release@2.11.0":
+  version "2.11.0"
+  resolved "https://registry.yarnpkg.com/@theunderscorer/nx-semantic-release/-/nx-semantic-release-2.11.0.tgz#25a267f9345bdb5219e40616c0094f52b4a14b19"
+  integrity sha512-pUyRdSSaNHexXdO2xfAS7xFlwnE9XoUd7q17uzh4dkc+VLSHs2Cw6cqUttiUs8N5uVV0tOCtpfxMqSQ9ho8vbw==
   dependencies:
-    "@nrwl/devkit" "19.6.0"
-    "@nx/devkit" "19.6.0"
+    "@nrwl/devkit" "17.2.7"
+    "@nx/devkit" "^17.2.7"
     "@semantic-release/changelog" "^6.0.2"
     "@semantic-release/exec" "^6.0.3"
     "@semantic-release/git" "^10.0.1"
@@ -4146,6 +4165,13 @@ semver-regex@^4.0.5:
   version "5.7.1"
   resolved "https://registry.yarnpkg.com/semver/-/semver-5.7.1.tgz#a954f931aeba508d307bbf069eff0c01c96116f7"
   integrity sha512-sauaDf/PZdVgrLTNYHRtpXa1iRiKcaebiKQ1BJdpQlWH2lCvexQdX55snPFyK7QzpudqbCI0qXFfOasHdyNDGQ==
+
+semver@7.5.3:
+  version "7.5.3"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-7.5.3.tgz#161ce8c2c6b4b3bdca6caadc9fa3317a4c4fe88e"
+  integrity sha512-QBlUtyVk/5EeHbi7X0fw6liDZc7BBmEaSYn01fMU1OUYbf6GPsbTtd8WmnqbI20SeycoHSeiybkE/q1Q+qlThQ==
+  dependencies:
+    lru-cache "^6.0.0"
 
 semver@^6.0.0:
   version "6.3.0"
