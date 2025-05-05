@@ -1,0 +1,6 @@
+{
+  "name": "semantic-release-amplify-plugin",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "sourceRoot": "tools/semantic-release-amplify-plugin/src"
+} 

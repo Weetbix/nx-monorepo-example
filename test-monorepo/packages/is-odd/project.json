@@ -9,6 +9,17 @@
       "options": {
         "plugins": [
           [
+            "@rebilly/semantic-release-amplify-plugin",
+            {
+              "amplifyProjects": [
+                {
+                  "name": "is-odd",
+                  "id": "d37ruqflbniuj3"
+                }
+              ]
+            }
+          ],
+          [
             "@semantic-release/exec",
             {
               "publishCmd": "node ../publish-to-s3.js ${nextRelease.version} ./dist/index.min.js main.js is-odd",

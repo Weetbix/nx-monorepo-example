@@ -1,0 +1,21 @@
+{
+  "name": "@rebilly/semantic-release-amplify-plugin",
+  "version": "1.0.0",
+  "description": "A semantic-release plugin for deploying to AWS Amplify",
+  "main": "dist/index.js",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "test": "node src/test.js"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.1692.0",
+    "semantic-release": "20.1.0",
+    "execa": "^5.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.0",
+    "@types/semantic-release": "^20.0.1",
+    "typescript": "^5.4.0"
+  }
+} 
