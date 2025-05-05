@@ -12,7 +12,7 @@ interface AmplifyProject {
 
 // The config that can be passed to the plugin
 interface PluginConfig {
-  amplifyProjects: AmplifyProject[];
+  amplifyProject: AmplifyProject;
 }
 
 // Interface for deploy result
@@ -169,29 +169,17 @@ async function publish(
   pluginConfig: PluginConfig,
   { logger }: ExtendedContext
 ) {
-  // Deploy each project
-  const deployResults = await Promise.all(
-    pluginConfig.amplifyProjects.map(async (project) => {
-      return deployToAmplify(project.id, project.name, logger);
-    })
-  );
+  const { amplifyProject } = pluginConfig;
+  const result = await deployToAmplify(amplifyProject.id, amplifyProject.name, logger);
 
-  logger.log('Deployment results:');
-  deployResults.forEach((result) => {
-    logger.log(`${result.projectName}: ${result.status}`);
-    if (result.url) {
-      logger.log(`URL: ${result.url}`);
-    }
-  });
-
-  if (deployResults.some((result) => result.status === 'failure')) {
+  if (result.status === 'failure') {
     throw new Error('Deployment failed');
   }
 
-  return deployResults.map((result) => ({
+  return {
     name: `Amplify (${result.projectName})`,
     url: result.url,
-  }));
+  };
 }
 
 const amplifyPlugin = {

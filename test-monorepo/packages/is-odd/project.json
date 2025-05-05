@@ -11,12 +11,19 @@
           [
             "@rebilly/semantic-release-amplify-plugin",
             {
-              "amplifyProjects": [
-                {
-                  "name": "is-odd",
-                  "id": "d37ruqflbniuj3"
-                }
-              ]
+              "amplifyProject": {
+                "name": "is-odd",
+                "id": "abcdefghijkl"
+              }
+            }
+          ],
+          [
+            "@rebilly/semantic-release-amplify-plugin",
+            {
+              "amplifyProject": {
+                "name": "is-odd-whitelabel",
+                "id": "mnopqrstuvwxyz"
+              }
             }
           ],
           [
