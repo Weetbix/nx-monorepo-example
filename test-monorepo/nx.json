@@ -11,7 +11,11 @@
   },
   "targetDefaults": {
     "semantic-release": {
-      "dependsOn": ["^build", "semantic-release-slack-plugin:build"],
+      "dependsOn": [
+        "^build",
+        "semantic-release-slack-plugin:build",
+        "semantic-release-amplify-plugin:build"
+      ],
       "options": {
         "buildTarget": "{projectName}:build",
         "outputPath": "./packages/{projectName}",
