@@ -39,7 +39,7 @@ jobs:
 
       - run: pnpm install
 
-      - run: pnpm nx run-many --target=semantic-release
+      - run: pnpm nx run-many --target=semantic-release --parallel=false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
