@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   changelog: true,
   npm: false,
   github: false,
@@ -31,5 +31,8 @@ module.exports = {
     { type: 'fix', release: 'patch' },
     { type: 'perf', release: 'patch' },
   ],
-  plugins: ['@rebilly/semantic-release-slack-plugin', '@anolilab/semantic-release-pnpm'],
+  plugins: [
+    '@rebilly/semantic-release-slack-plugin',
+    '@anolilab/semantic-release-pnpm',
+  ],
 };
