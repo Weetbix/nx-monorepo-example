@@ -1,3 +1,6 @@
+// dynamic import for anolilab/semantic-release-pnpm
+const semanticReleasePnpm = await import('@anolilab/semantic-release-pnpm');
+
 module.exports = {
   changelog: true,
   npm: false,
@@ -31,8 +34,5 @@ module.exports = {
     { type: 'fix', release: 'patch' },
     { type: 'perf', release: 'patch' },
   ],
-  plugins: [
-    '@rebilly/semantic-release-slack-plugin',
-    '@anolilab/semantic-release-pnpm',
-  ],
+  plugins: ['@rebilly/semantic-release-slack-plugin', semanticReleasePnpm],
 };

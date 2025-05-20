@@ -4,7 +4,6 @@
   "license": "MIT",
   "scripts": {},
   "private": true,
-  "type": "module",
   "devDependencies": {
     "@anolilab/semantic-release-pnpm": "^1.1.11",
     "@nx/workspace": "^20.8.1",
