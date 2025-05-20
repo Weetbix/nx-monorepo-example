@@ -33,6 +33,13 @@ module.exports = {
   ],
   plugins: [
     '@rebilly/semantic-release-slack-plugin',
-    'semantic-release-pnpm'
+    [
+      '@semantic-release/exec',
+      {
+        prepareCmd:
+          'pnpm version ${nextRelease.version} --git-tag-version=false',
+        publishCmd: 'pnpm publish --no-git-checks',
+      },
+    ],
   ],
 };

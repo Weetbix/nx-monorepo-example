@@ -12,7 +12,6 @@ export const isOdd5 = (x: number) => !isEven(x);
 
 export const isOdd6 = (x: number) => !isEven(x);
 
-export const isOdd7 = (x: number) => !isEven(x);
 
 
 
