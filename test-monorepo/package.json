@@ -5,12 +5,12 @@
   "scripts": {},
   "private": true,
   "devDependencies": {
-    "@anolilab/semantic-release-pnpm": "^1.1.11",
     "@nx/workspace": "^20.8.1",
     "@theunderscorer/nx-semantic-release": "2.11.0",
     "conventional-changelog-conventionalcommits": "^5.0.0",
     "nx": "^20.8.1",
     "prettier": "^2.6.2",
+    "semantic-release-pnpm": "^1.0.2",
     "typescript": "^4.9.5"
   },
   "workspaces": [

@@ -33,6 +33,6 @@ module.exports = {
   ],
   plugins: [
     '@rebilly/semantic-release-slack-plugin',
-    '@anolilab/semantic-release-pnpm'
+    'semantic-release-pnpm'
   ],
 };

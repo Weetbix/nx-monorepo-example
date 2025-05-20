@@ -8,6 +8,7 @@ export const isOdd3 = (x: number) => !isEven(x);
 
 export const isOdd4 = (x: number) => !isEven(x);
 
+export const isOdd5 = (x: number) => !isEven(x);
 
 
 
