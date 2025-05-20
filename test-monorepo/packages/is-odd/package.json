@@ -7,7 +7,9 @@
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@weetbix/is-even": "workspace:*"
+  },
   "scripts": {
     "build": "tsc index.ts --outDir dist"
   }

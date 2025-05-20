@@ -29,7 +29,11 @@ importers:
 
   packages/is-even: {}
 
-  packages/is-odd: {}
+  packages/is-odd:
+    devDependencies:
+      '@weetbix/is-even':
+        specifier: workspace:*
+        version: link:../is-even
 
   packages/semantic-release-amplify-plugin:
     dependencies:
