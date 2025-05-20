@@ -83,6 +83,8 @@ function createMessageAttachment(
     },
   ];
 
+  console.log('context.releases', context.releases);
+  
   // Generate release links (only for success)
   if (status === 'success' && context.releases) {
     links = [
