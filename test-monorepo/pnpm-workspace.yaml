@@ -1,8 +1,10 @@
 packages:
   - packages/**
+ignoredBuiltDependencies:
+  - aws-sdk
+  - es5-ext
 linkWorkspacePackages: true
-
-# Override local package versions so that we can use
-# "workspace" in the package.json files.
+onlyBuiltDependencies:
+  - nx
 overrides:
-  "@weetbix/is-even": "workspace:*"
+  '@weetbix/is-even': workspace:*

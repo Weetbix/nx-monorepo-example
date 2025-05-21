@@ -52,7 +52,7 @@ importers:
     devDependencies:
       '@types/node':
         specifier: ^18.15.0
-        version: 18.19.101
+        version: 18.19.103
       '@types/semantic-release':
         specifier: ^20.0.1
         version: 20.0.6
@@ -71,7 +71,7 @@ importers:
     devDependencies:
       '@types/node':
         specifier: ^18.15.0
-        version: 18.19.101
+        version: 18.19.103
       '@types/semantic-release':
         specifier: ^20.0.1
         version: 20.0.6
@@ -353,8 +353,8 @@ packages:
   '@types/minimist@1.2.5':
     resolution: {integrity: sha512-hov8bUuiLiyFPGyFPE1lwWhmzYbirOXQNNo40+y3zow8aFVTeyn3VWL0VFFfdNddA8S4Vf0Tc062rzyNr7Paag==}
 
-  '@types/node@18.19.101':
-    resolution: {integrity: sha512-Ykg7fcE3+cOQlLUv2Ds3zil6DVjriGQaSN/kEpl5HQ3DIGM6W0F2n9+GkWV4bRt7KjLymgzNdTnSKCbFUUJ7Kw==}
+  '@types/node@18.19.103':
+    resolution: {integrity: sha512-hHTHp+sEz6SxFsp+SA+Tqrua3AbmlAw+Y//aEwdHrdZkYVRWdvWD3y5uPZ0flYOkgskaFWqZ/YGFm3FaFQ0pRw==}
 
   '@types/normalize-package-data@2.4.4':
     resolution: {integrity: sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==}
@@ -2610,7 +2610,7 @@ snapshots:
 
   '@slack/logger@3.0.0':
     dependencies:
-      '@types/node': 18.19.101
+      '@types/node': 18.19.103
 
   '@slack/types@2.14.0': {}
 
@@ -2619,7 +2619,7 @@ snapshots:
       '@slack/logger': 3.0.0
       '@slack/types': 2.14.0
       '@types/is-stream': 1.1.0
-      '@types/node': 18.19.101
+      '@types/node': 18.19.103
       axios: 1.9.0
       eventemitter3: 3.1.2
       form-data: 2.5.3
@@ -2657,11 +2657,11 @@ snapshots:
 
   '@types/is-stream@1.1.0':
     dependencies:
-      '@types/node': 18.19.101
+      '@types/node': 18.19.103
 
   '@types/minimist@1.2.5': {}
 
-  '@types/node@18.19.101':
+  '@types/node@18.19.103':
     dependencies:
       undici-types: 5.26.5
 
@@ -2673,7 +2673,7 @@ snapshots:
 
   '@types/semantic-release@20.0.6':
     dependencies:
-      '@types/node': 18.19.101
+      '@types/node': 18.19.103
 
   '@yarnpkg/lockfile@1.1.0': {}
 
@@ -2798,7 +2798,7 @@ snapshots:
   buffer@4.9.2:
     dependencies:
       base64-js: 1.5.1
-      ieee754: 1.2.1
+      ieee754: 1.1.13
       isarray: 1.0.0
 
   buffer@5.7.1:
