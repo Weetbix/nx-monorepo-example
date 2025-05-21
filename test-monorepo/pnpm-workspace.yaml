@@ -1,3 +1,8 @@
 packages:
   - packages/**
 linkWorkspacePackages: true
+
+# Override local package versions so that we can use
+# "workspace" in the package.json files.
+overrides:
+  "@weetbix/is-even": "workspace:*"

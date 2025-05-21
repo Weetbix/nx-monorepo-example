@@ -1,6 +1,6 @@
 module.exports = {
   changelog: true,
-  npm: false,
+  npm: true,
   github: false,
   git: false,
   repositoryUrl: 'https://github.com/Weetbix/nx-monorepo-example',
@@ -31,13 +31,5 @@ module.exports = {
     { type: 'fix', release: 'patch' },
     { type: 'perf', release: 'patch' },
   ],
-  plugins: [
-    '@rebilly/semantic-release-slack-plugin',
-    [
-      'semantic-release-pnpm',
-      {
-        pkgRoot: '${PROJECT_DIR}',
-      },
-    ],
-  ],
+  plugins: ['@rebilly/semantic-release-slack-plugin'],
 };
