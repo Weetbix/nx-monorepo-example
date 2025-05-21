@@ -31,5 +31,13 @@ module.exports = {
     { type: 'fix', release: 'patch' },
     { type: 'perf', release: 'patch' },
   ],
-  plugins: ['@rebilly/semantic-release-slack-plugin', 'semantic-release-pnpm'],
+  plugins: [
+    '@rebilly/semantic-release-slack-plugin',
+    [
+      'semantic-release-pnpm',
+      {
+        pkgRoot: '${PROJECT_DIR}',
+      },
+    ],
+  ],
 };
