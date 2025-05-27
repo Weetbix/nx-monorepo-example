@@ -183,7 +183,9 @@ async function success(_pluginConfig: unknown, context: ExtendedContext) {
  * Update the Slack message with failure information
  */
 async function fail(_pluginConfig: unknown, context: ExtendedContext) {
+  console.log('in fail handler (slack)');
   const { logger, env } = context;
+  logger.log('in fail handler (slack)');
   const messageAttachment = createMessageAttachment(context, 'failure');
 
   logger.log('Posting release failure notification to Slack...');
