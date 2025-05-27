@@ -1,6 +1,7 @@
 import { WebClient } from '@slack/web-api';
-import { execSync } from 'child_process';
+import { execSync, spawn } from 'child_process';
 import type { Context, Config, Release } from 'semantic-release';
+import { join } from 'path';
 
 // Add releases item to the context, since I know it exists
 interface ExtendedContext extends Context {
@@ -10,6 +11,7 @@ interface ExtendedContext extends Context {
 let slackClient: WebClient;
 let messageTs: string;
 let channelId: string;
+let monitorProcess: any;
 
 /**
  * Extracts PR number from commit message
@@ -84,7 +86,7 @@ function createMessageAttachment(
   ];
 
   console.log('context.releases', context.releases);
-  
+
   // Generate release links (only for success)
   if (status === 'success' && context.releases) {
     links = [
@@ -137,7 +139,49 @@ function createMessageAttachment(
 }
 
 /**
- * Sends a release start notification to Slack
+ * Spawns a monitoring process that will update Slack if the main process dies
+ */
+function spawnMonitorProcess(context: ExtendedContext) {
+  const { env } = context;
+  const scriptPath = join(__dirname, 'monitor.js');
+
+  // Create the complete message configuration
+  const messageConfig = {
+    packageName: context.options?.executorContext?.projectName || '',
+    attachment: createMessageAttachment(context, 'failure'),
+  };
+
+  // Spawn the monitor process with the necessary environment variables
+  monitorProcess = spawn('node', [scriptPath], {
+    env: {
+      ...process.env,
+      SLACK_BOT_TOKEN: env.SLACK_BOT_TOKEN,
+      SLACK_RELEASE_CHANNEL_ID: env.SLACK_RELEASE_CHANNEL_ID,
+      SLACK_BOT_USERNAME: env.SLACK_BOT_USERNAME,
+      SLACK_BOT_ICON_EMOJI: env.SLACK_BOT_ICON_EMOJI,
+      MESSAGE_TS: messageTs,
+      CHANNEL_ID: channelId,
+      MESSAGE_CONFIG: JSON.stringify(messageConfig),
+    },
+    detached: true,
+    stdio: 'ignore',
+  });
+
+  // Allow the parent process to exit while the monitor continues running
+  monitorProcess.unref();
+}
+
+/**
+ * Kills the monitoring process if it exists
+ */
+function killMonitorProcess() {
+  if (monitorProcess) {
+    monitorProcess.kill();
+  }
+}
+
+/**
+ * Updates the prepare function to spawn the monitor
  */
 async function prepare(_pluginConfig: unknown, context: ExtendedContext) {
   const { logger, env } = context;
@@ -157,10 +201,13 @@ async function prepare(_pluginConfig: unknown, context: ExtendedContext) {
   });
   messageTs = response.ts as string;
   logger.log(`Posted to Slack, message timestamp: ${messageTs}`);
+
+  // Spawn the monitor process
+  spawnMonitorProcess(context);
 }
 
 /**
- * Update the Slack message with success information
+ * Updates the success function to kill the monitor
  */
 async function success(_pluginConfig: unknown, context: ExtendedContext) {
   const { logger, env } = context;
@@ -177,10 +224,13 @@ async function success(_pluginConfig: unknown, context: ExtendedContext) {
     icon_emoji: env.SLACK_BOT_ICON_EMOJI,
   });
   logger.log('Successfully updated Slack message with release information');
+
+  // Kill the monitor process
+  killMonitorProcess();
 }
 
 /**
- * Update the Slack message with failure information
+ * Updates the fail function to kill the monitor
  */
 async function fail(_pluginConfig: unknown, context: ExtendedContext) {
   console.log('in fail handler (slack)');
@@ -199,6 +249,9 @@ async function fail(_pluginConfig: unknown, context: ExtendedContext) {
     icon_emoji: env.SLACK_BOT_ICON_EMOJI,
   });
   logger.log('Successfully updated Slack message with failure information');
+
+  // Kill the monitor process
+  killMonitorProcess();
 }
 
 export { prepare, success, fail };
