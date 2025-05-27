@@ -38,5 +38,20 @@ function checkParentProcess() {
   }
 }
 
-// Check every second
-setInterval(checkParentProcess, 1000); 
+// Handle kill signals
+process.on('SIGTERM', () => {
+  console.log('Monitor process received SIGTERM, updating Slack...');
+  updateSlackMessage().finally(() => {
+    process.exit(0);
+  });
+});
+
+process.on('SIGINT', () => {
+  console.log('Monitor process received SIGINT, updating Slack...');
+  updateSlackMessage().finally(() => {
+    process.exit(0);
+  });
+});
+
+// Check every 2 seconds
+setInterval(checkParentProcess, 2000); 
